@@ -1,9 +1,8 @@
 "use client";
 
-import { auth, db, storage } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,9 +26,6 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [aadharCard, setAadharCard] = useState<File | null>(null);
-  const [studentId, setStudentId] = useState<File | null>(null);
-  const [panCard, setPanCard] = useState<File | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
@@ -89,8 +85,6 @@ export default function Signup() {
       setStep(1);
     } else if (step === 1 && validateStep1()) {
       setStep(2);
-    } else if (step === 2 && validateStep2()) {
-      setStep(3);
     }
   };
 
@@ -99,65 +93,61 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    try {
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
+    setError("");
 
-      // 1. Create Firebase auth user
+    if (!validateStep1() || !validateStep2()) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Create auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Store user data in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        username,
-        email,
-        role: userType, // Add role to users collection
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString() 
-      });
-
-      const userDetails = {
-        first_name: firstName,
-        last_name: lastName,  
+      // Common user data without documents
+      const userData = {
+        uid: user.uid,
+        firstName,
+        lastName,
         age: parseInt(age),
         occupation,
         country,
         state,
         city,
-        full_address: fullAddress,
-        email, // Add email to userDetails
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        fullAddress,
+        email,
+        username,
+        userType,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
-      if (userType === "lender") {
-        await setDoc(doc(db, 'lendor', user.uid), userDetails);
-        router.replace('/lender');
+      // Add borrower-specific fields if userType is borrower
+      const finalUserData = userType === 'borrower' ? {
+        ...userData,
+        currentLimit: 1000,
+        loansBorrowed: 0,
+        loansRepaid: 0
+      } : userData;
+
+      // Create user document in users collection
+      console.log('Creating user document...');
+      await setDoc(doc(db, 'users', user.uid), finalUserData);
+
+      // Create role-specific document
+      console.log(`Creating ${userType} document...`);
+      if (userType === 'lender') {
+        await setDoc(doc(db, 'lender', user.uid), finalUserData);
+        router.push('/lender');
       } else {
-        await setDoc(doc(db, 'borrower', user.uid), userDetails);
-        router.replace('/borrower');
-      }
-
-      // 3. Handle file uploads to Firebase Storage
-      if (aadharCard) {
-        const aadharRef = ref(storage, `documents/${user.uid}/aadhar`);
-        await uploadBytes(aadharRef, aadharCard);
-      }
-
-      if (studentId) {
-        const studentIdRef = ref(storage, `documents/${user.uid}/student`);
-        await uploadBytes(studentIdRef, studentId);
-      }
-
-      if (panCard) {
-        const panCardRef = ref(storage, `documents/${user.uid}/pan`);
-        await uploadBytes(panCardRef, panCard);
+        await setDoc(doc(db, 'borrower', user.uid), finalUserData);
+        router.push('/borrower');
       }
 
     } catch (error: any) {
-      setError(error.message || 'An error occurred during signup');
+      console.error('Registration error:', error);
+      setError(error.message || 'Failed to create account');
     } finally {
       setIsSubmitting(false);
     }
@@ -462,65 +452,6 @@ export default function Signup() {
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </motion.button>
-                </motion.div>
-              </div>
-              <div className="flex justify-between">
-                <Button type="button" className="w-1/2 mr-2" onClick={handleBack}>
-                  Back
-                </Button>
-                <Button type="button" className="w-1/2 ml-2" onClick={handleNext}>
-                  Next
-                </Button>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="aadharCard">Aadhar Card (Required)</Label>
-                <motion.div
-              whileHover={{ scale: 1.05 }}
-              className='relative'
-            >
-                <Input 
-                  id="aadharCard" 
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setAadharCard(e.target.files ? e.target.files[0] : null)}
-                  className="bg-transparent border border-gray-300"
-                  required
-                />
-                </motion.div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="studentId">Student ID (Optional)</Label>
-                <motion.div
-              whileHover={{ scale: 1.05 }}
-              className='relative'
-            >
-                <Input 
-                  id="studentId" 
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setStudentId(e.target.files ? e.target.files[0] : null)}
-                  className="bg-transparent border border-gray-300"
-                />
-                </motion.div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="panCard">PAN Card (Optional)</Label>
-                <motion.div
-              whileHover={{ scale: 1.05 }}
-              className='relative'
-            >
-                <Input 
-                  id="panCard" 
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={(e) => setPanCard(e.target.files ? e.target.files[0] : null)}
-                  className="bg-transparent border border-gray-300"
-                />
                 </motion.div>
               </div>
               <div className="flex justify-between">

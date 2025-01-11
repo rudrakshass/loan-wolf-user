@@ -1,12 +1,14 @@
 "use client"
 
 import { Home, DollarSign, Users, History, Settings, LogOut } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
 import wolfimage from "@/components/assets/wolf.png";
+import { auth } from "@/lib/firebase/config"
+import { signOut } from "firebase/auth"
 
 const defaultRoutes = [
   {
@@ -19,6 +21,16 @@ const defaultRoutes = [
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      router.push('/')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
+  }
 
   return (
     <div className="space-y-4 space-x-20 py-4 px-2 flex flex-col h-full bg-[#181127] text-white">
@@ -58,7 +70,11 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           whileTap={{ scale: 0.95 }}
           layout
         >
-          <Button variant="ghost" className="w-full justify-start text-zinc-400 hover:text-white hover:bg-white/10">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-zinc-400 hover:text-white hover:bg-white/10"
+            onClick={handleLogout}
+          >
             <LogOut className="h-5 w-5 mr-3" />
             Logout
           </Button>
