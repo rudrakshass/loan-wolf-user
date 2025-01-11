@@ -386,36 +386,6 @@ export default function Profile() {
                 </div>
 
 
-                <div className="mt-6">
-                  <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <ThumbsDown className="h-4 w-4" />
-                    Failure Highlights
-                  </h3>
-                  <div className="flex gap-2 flex-wrap">
-                    {userData?.failureHighlights?.map((highlight, index) => (
-                      <span key={index} className="px-3 py-1 bg-muted rounded-full text-sm">
-                        {highlight}
-                      </span>
-                    ))}
-                  </div> 
-                </div>
-
-                {/* User Posts Section */}
-                <div className="mt-8">
-                  <h3 className="font-semibold mb-3">Your Posts</h3>
-                  <div className="space-y-4">
-                    {posts.length === 0 ? (
-                      <p>No posts yet</p>
-                    ) : (
-                      posts.map((post) => (
-                        <Card key={post.id} className="p-4">
-                          <h4 className="font-semibold text-lg">{post.title}</h4>
-                          <p className="text-sm text-muted-foreground">{post.content}</p>
-                        </Card>
-                      ))
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           </Card> 
