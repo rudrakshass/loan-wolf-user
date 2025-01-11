@@ -31,6 +31,9 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [userType, setUserType] = useState<"lender" | "borrower" | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aadharCard, setAadharCard] = useState<File | null>(null);
+  const [studentId, setStudentId] = useState<File | null>(null);
+  const [panCard, setPanCard] = useState<File | null>(null);
   const router = useRouter();
   
 
@@ -85,6 +88,8 @@ export default function Signup() {
       setStep(1);
     } else if (step === 1 && validateStep1()) {
       setStep(2);
+    } else if (step === 2 && validateStep2()) {
+      setStep(3);  // Add this back
     }
   };
 
@@ -458,16 +463,62 @@ export default function Signup() {
                 <Button type="button" className="w-1/2 mr-2" onClick={handleBack}>
                   Back
                 </Button>
-                <Button 
-                  type="submit" 
-                  className="w-1/2 ml-2" 
-                  disabled={isSubmitting}
-                >
+                <Button type="submit" className="w-1/2 ml-2" disabled={isSubmitting}>
                   {isSubmitting ? 'Signing up...' : 'Submit'}
                 </Button>
               {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               <div className="text-center mt-4">
               </div>
+              </div>
+            </>
+          )}
+
+          {step === 3 && (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="aadharCard">Aadhar Card (Required)</Label>
+                <motion.div whileHover={{ scale: 1.05 }} className='relative'>
+                  <Input 
+                    id="aadharCard" 
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setAadharCard(e.target.files ? e.target.files[0] : null)}
+                    className="bg-transparent border border-gray-300"
+                    required
+                  />
+                </motion.div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="studentId">Student ID (Optional)</Label>
+                <motion.div whileHover={{ scale: 1.05 }} className='relative'>
+                  <Input 
+                    id="studentId" 
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setStudentId(e.target.files ? e.target.files[0] : null)}
+                    className="bg-transparent border border-gray-300"
+                  />
+                </motion.div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="panCard">PAN Card (Optional)</Label>
+                <motion.div whileHover={{ scale: 1.05 }} className='relative'>
+                  <Input 
+                    id="panCard" 
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={(e) => setPanCard(e.target.files ? e.target.files[0] : null)}
+                    className="bg-transparent border border-gray-300"
+                  />
+                </motion.div>
+              </div>
+              <div className="flex justify-between">
+                <Button type="button" className="w-1/2 mr-2" onClick={handleBack}>
+                  Back
+                </Button>
+                <Button type="submit" className="w-1/2 ml-2" disabled={isSubmitting}>
+                  {isSubmitting ? 'Signing up...' : 'Submit'}
+                </Button>
               </div>
             </>
           )}
