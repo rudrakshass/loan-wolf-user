@@ -134,7 +134,7 @@ export default function Signup() {
 
       if (userType === "lender") {
         await setDoc(doc(db, 'lendor', user.uid), userDetails);
-        router.replace('/lendor');
+        router.replace('/lender');
       } else {
         await setDoc(doc(db, 'borrower', user.uid), userDetails);
         router.replace('/borrower');
