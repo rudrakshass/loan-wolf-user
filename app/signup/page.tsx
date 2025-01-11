@@ -1,5 +1,6 @@
 "use client";
 
+import { supabase } from '@/lib/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,15 +8,6 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import { 
-//   createUserWithEmailAndPassword, 
-//   signInWithPopup, 
-//   GoogleAuthProvider, 
-//   GithubAuthProvider 
-// } from "firebase/auth";
-// import { getAuth } from "firebase/auth";
-// import { firebaseApp } from "@/lib/firebase";
-// import { useAuth } from "@/contexts/AuthContext";
 
 export default function Signup() {
   const [step, setStep] = useState(1);
@@ -35,16 +27,74 @@ export default function Signup() {
   const [studentId, setStudentId] = useState<File | null>(null);
   const [panCard, setPanCard] = useState<File | null>(null);
   const [error, setError] = useState("");
-  // // const { signup } = useAuth();
-  // const router = useRouter();
-  // // const auth = getAuth(firebaseApp);
+  const router = useRouter();
 
   const handleNext = () => setStep(step + 1);
   const handleBack = () => setStep(step - 1);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
+    try {
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+
+      // 1. First create the auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // 2. Then insert the additional user data
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert([
+            {
+              id: authData.user.id,
+              first_name: firstName,
+              last_name: lastName,
+              age: parseInt(age),
+              occupation,
+              country,
+              state,
+              city,
+              username,
+              email,
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
+        // 3. Handle file uploads if needed
+        if (aadharCard) {
+          const { error: aadharError } = await supabase.storage
+            .from('documents')
+            .upload(`${authData.user.id}/aadhar`, aadharCard);
+          if (aadharError) throw aadharError;
+        }
+
+        // Optional document uploads
+        if (studentId) {
+          await supabase.storage
+            .from('documents')
+            .upload(`${authData.user.id}/student`, studentId);
+        }
+
+        if (panCard) {
+          await supabase.storage
+            .from('documents')
+            .upload(`${authData.user.id}/pan`, panCard);
+        }
+
+        router.push('/dashboard');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred during signup');
+    }
   };
 
   return (
