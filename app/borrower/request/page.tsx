@@ -6,18 +6,51 @@ import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { auth, db } from "@/lib/firebase/config"
+import { arrayUnion, doc, setDoc } from "firebase/firestore"
 
 export default function RequestLoan() {
-  const [amount, setAmount] = useState<number>(5000)
+  const [amount, setAmount] = useState<number>(500)
   const [purpose, setPurpose] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log({ amount, purpose })
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    try {
+      const loanDetails = {
+        amount: amount,
+        purpose,
+        borrowerId: auth.currentUser?.uid || "unknown", 
+        created_at: new Date().toISOString(), 
+        status: "pending",
+      };
+      console.log("Submitting loan request:", auth.currentUser?.uid);
+      const borrowerId = auth.currentUser?.uid;
+    if (!borrowerId) {
+      throw new Error("User is not authenticated.");
+    }
+
+      const loanDocRef = doc(db, "loan_requests", borrowerId);
+      await setDoc(
+        loanDocRef,
+        {
+          loan_requests: arrayUnion(loanDetails),
+        },
+        { merge: true }
+      );
+      console.log("Loan request submitted successfully:", loanDetails);  
+      alert("Loan request submitted successfully!");
+      setAmount(500);
+      setPurpose("")
+    } catch (error) {
+      console.error("Error submitting loan request:", error);
+      alert("Failed to submit loan request. Please try again later.");
+    }
+  };
+  
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
       <main className="flex-1 items-center p-8">
         <Card>
           <CardHeader>

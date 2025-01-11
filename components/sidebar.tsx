@@ -21,7 +21,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="space-y-4 py-4 px-2 flex flex-col h-full bg-[#181127] text-white">
+    <div className="space-y-4 space-x-20 py-4 px-2 flex flex-col h-full bg-[#181127] text-white">
       <div className="px-3 py-2 flex-1">
         <Link href="/" className="flex flex-col items-center mb-14">
           <div className="flex flex-col items-center">

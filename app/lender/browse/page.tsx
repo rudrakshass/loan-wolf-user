@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { useState,useEffect } from "react"
+import { getDoc, getDocs,collection } from "firebase/firestore"
+import { db } from "@/lib/firebase/config"
 
 // Mock data for loan requests
 const loanRequests = [
@@ -19,6 +21,32 @@ export default function BrowseRequests() {
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
   const [interestRate, setInterestRate] = useState("")
   const [duration, setDuration] = useState("")
+  const [loanRequests, setLoanRequests] = useState<any[]>([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const loanRequestsRef = collection(db, "loan_requests");
+        const querySnapshot = await getDocs(loanRequestsRef);
+
+        const data = querySnapshot.docs.flatMap((doc) => {
+          const borrowerId = doc.id;
+          const loans = doc.data().loan_requests || [];
+          return loans.map((loan: any) => ({
+            ...loan,
+            borrowerId,
+          }));
+        });
+  
+        setLoanRequests(data); 
+        console.log("Loan Requests:", data); 
+      } catch (error) {
+        console.error("Error fetching loan requests:", error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
 
   const handleSubmitOffer = () => {
     console.log({
@@ -26,7 +54,6 @@ export default function BrowseRequests() {
       interestRate,
       duration,
     })
-    // Handle offer submission
   }
 
   return (
@@ -34,7 +61,7 @@ export default function BrowseRequests() {
       <main className="flex-1 p-8">
         <div className="grid gap-6">
           <h1 className="text-2xl font-bold">Browse Loan Requests</h1>
-          
+
           {loanRequests.map((request) => (
             <Card key={request.id}>
               <CardHeader>
@@ -45,7 +72,7 @@ export default function BrowseRequests() {
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Borrower</p>
-                      <p>{request.borrower}</p>
+                      <p>{request.borrowerId}</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Amount</p>
@@ -56,11 +83,15 @@ export default function BrowseRequests() {
                       <p>{request.purpose}</p>
                     </div>
                   </div>
-                  
+
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button 
-                        onClick={() => setSelectedRequest(request)}
+                      <Button
+                        onClick={() => {
+                          setSelectedRequest(request);
+                          setInterestRate(""); // Reset form fields
+                          setDuration("");
+                        }}
                         className="w-full"
                       >
                         Make an Offer
@@ -102,5 +133,5 @@ export default function BrowseRequests() {
         </div>
       </main>
     </div>
-  )
-}
+  );
+};
