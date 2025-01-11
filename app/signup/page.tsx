@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Signup() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Changed initial step to 0
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
@@ -33,6 +33,8 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [userType, setUserType] = useState<"lender" | "borrower" | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   
 
@@ -83,7 +85,9 @@ export default function Signup() {
   const handleNext = () => {
     setError("");  // Clear any existing errors
     
-    if (step === 1 && validateStep1()) {
+    if (step === 0 && userType) {
+      setStep(1);
+    } else if (step === 1 && validateStep1()) {
       setStep(2);
     } else if (step === 2 && validateStep2()) {
       setStep(3);
@@ -94,6 +98,7 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       if (password !== confirmPassword) {
         setError("Passwords do not match");
@@ -108,11 +113,12 @@ export default function Signup() {
       await setDoc(doc(db, 'users', user.uid), {
         username,
         email,
+        role: userType, // Add role to users collection
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString() 
       });
 
-      await setDoc(doc(db, 'lendor', user.uid), {
+      const userDetails = {
         first_name: firstName,
         last_name: lastName,  
         age: parseInt(age),
@@ -121,9 +127,18 @@ export default function Signup() {
         state,
         city,
         full_address: fullAddress,
+        email, // Add email to userDetails
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
-      });
+      };
+
+      if (userType === "lender") {
+        await setDoc(doc(db, 'lendor', user.uid), userDetails);
+        router.replace('/lendor');
+      } else {
+        await setDoc(doc(db, 'borrower', user.uid), userDetails);
+        router.replace('/borrower');
+      }
 
       // 3. Handle file uploads to Firebase Storage
       if (aadharCard) {
@@ -141,9 +156,10 @@ export default function Signup() {
         await uploadBytes(panCardRef, panCard);
       }
 
-      router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || 'An error occurred during signup');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -166,7 +182,7 @@ export default function Signup() {
         </div>
 
         <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-          <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(step / 3) * 100}%` }}></div>
+          <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(step / 4) * 100}%` }}></div>
         </div>
 
         {error && (
@@ -176,8 +192,56 @@ export default function Signup() {
         )}
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {step === 0 && (
+            <div className="grid grid-cols-2 gap-6">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className={`p-6 rounded-lg border-2 cursor-pointer ${
+                  userType === 'lender' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}
+                onClick={() => setUserType('lender')}
+              >
+                <h3 className="text-xl font-bold mb-2">Lender</h3>
+                <p className="text-gray-600">Invest your money and earn returns</p>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className={`p-6 rounded-lg border-2 cursor-pointer ${
+                  userType === 'borrower' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                }`}
+                onClick={() => setUserType('borrower')}
+              >
+                <h3 className="text-xl font-bold mb-2">Borrower</h3>
+                <p className="text-gray-600">Get quick loans at competitive rates</p>
+              </motion.div>
+
+              <Button 
+                type="button" 
+                className="w-full col-span-2 mt-4" 
+                onClick={handleNext}
+                disabled={!userType}
+              >
+                Continue as {userType ?? '...'}
+              </Button>
+            </div>
+          )}
+
           {step === 1 && (
             <>
+              <div className="space-y-2">
+                <Label htmlFor="userType">Sign up as</Label>
+                <select
+                  id="userType"
+                  value={userType}
+                  onChange={(e) => setUserType(e.target.value as "lender" | "borrower")}
+                  className="bg-transparent border border-gray-300"
+                  required
+                >
+                  <option value="lender">Lender</option>
+                  <option value="borrower">Borrower</option>
+                </select>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
@@ -473,9 +537,19 @@ export default function Signup() {
                 <Button type="button" className="w-1/2 mr-2" onClick={handleBack}>
                   Back
                 </Button>
-                <Button type="submit" className="w-1/2 ml-2">
-                  Submit
+                <Button 
+                  type="submit" 
+                  className="w-1/2 ml-2" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Signing up...' : 'Submit'}
                 </Button>
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+              <div className="text-center mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Youll be redirected to the {userType === 'lender' ? 'lender' : 'borrower'} dashboard after signup
+                </p>
+              </div>
               </div>
             </>
           )}
