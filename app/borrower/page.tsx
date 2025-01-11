@@ -13,11 +13,13 @@ export default function RequestLoan() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    // Handle loan request submission
     console.log({ amount, purpose })
   }
 
   return (
     <div className="flex min-h-screen">
+      <Sidebar/>
       <main className="flex-1 p-8">
         <Card>
           <CardHeader>

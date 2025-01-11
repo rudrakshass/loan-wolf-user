@@ -6,28 +6,26 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <div className="relative">
-        {/* Hero Section with Geometric Pattern */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="absolute inset-0 bg-background">
           <div className="absolute inset-0" style={{
             backgroundImage: "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)",
             backgroundSize: "40px 40px"
           }}></div>
         </div>
-        
-        {/* Content */}
+
         <div className="relative">
           <nav className="border-b border-white/10">
             <div className="container mx-auto px-6 py-4">
               <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-purple-500 bg-clip-text text-transparent">
                   Loan<span className="text-primary">Wolf</span>
                 </h1>
                 <div className="space-x-4">
-                  <Link href="/signin">
-                    <Button variant="ghost" className="text-white hover:text-white hover:bg-white/10">Sign In</Button>
+                  <Link href="/login">
+                    <Button variant="ghost" className="text-purple-500 hover:text-purple-400 hover:bg-white/10">Sign In</Button>
                   </Link>
                   <Link href="/signup">
-                    <Button className="bg-white text-gray-900 hover:bg-gray-200">Get Started</Button>
+                    <Button className="bg-white text-gray-900 hover:bg-gradient-to-r from-white to-purple-400 ">Get Started</Button>
                   </Link>
                 </div>
               </div>
@@ -46,13 +44,13 @@ export default function Home() {
                   Join the future of lending. Connect directly with verified borrowers and lenders on our secure platform.
                 </p>
                 <div className="flex gap-4">
-                  <Link href="/signup?type=borrower">
+                  <Link href="/borrower">
                     <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-200 text-lg px-8">
                       Start Borrowing
                       <ChevronRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
-                  <Link href="/signup?type=lender">
+                  <Link href="/lender">
                     <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-lg px-8">
                       Start Lending
                       <ChevronRight className="ml-2 h-5 w-5" />
@@ -96,7 +94,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Features Section */}
         <div className="relative border-t border-white/10">
           <div className="container mx-auto px-6 py-24">
             <div className="grid md:grid-cols-3 gap-12">

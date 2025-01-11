@@ -31,7 +31,6 @@ export default function BrowseRequests() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar userType="lender" className="w-64 border-r" />
       <main className="flex-1 p-8">
         <div className="grid gap-6">
           <h1 className="text-2xl font-bold">Browse Loan Requests</h1>

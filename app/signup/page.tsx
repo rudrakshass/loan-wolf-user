@@ -18,37 +18,47 @@ import { useRouter } from "next/navigation";
 // import { useAuth } from "@/contexts/AuthContext";
 
 export default function Signup() {
-  const [step, setStep] = useState(1);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [age, setAge] = useState("");
-  const [occupation, setOccupation] = useState("");
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [fullAddress, setFullAddress] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [aadharCard, setAadharCard] = useState<File | null>(null);
-  const [studentId, setStudentId] = useState<File | null>(null);
-  const [panCard, setPanCard] = useState<File | null>(null);
   const [error, setError] = useState("");
   // // const { signup } = useAuth();
   // const router = useRouter();
   // // const auth = getAuth(firebaseApp);
 
-  const handleNext = () => setStep(step + 1);
-  const handleBack = () => setStep(step - 1);
+  // const handleSignup = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setError("");
+  //   try {
+  //     await signup(email, password);
+  //     router.push("/");
+  //   } catch (err: any) {
+  //     setError(err.message);
+  //   }
+  // };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission
-  };
+  // const signupWithGoogle = async () => {
+  //   const provider = new GoogleAuthProvider();
+  //   try {
+  //     await signInWithPopup(auth, provider);
+  //     router.push("/");
+  //   } catch (err: any) {
+  //     setError(err.message);
+  //   }
+  // };
+
+  // const signupWithGitHub = async () => {
+  //   const provider = new GithubAuthProvider();
+  //   try {
+  //     await signInWithPopup(auth, provider);
+  //     router.push("/");
+  //   } catch (err: any) {
+  //     setError(err.message);
+  //   }
+  // };
 
   return (
-    <div className="min-h-screen flex my-10 items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -62,194 +72,51 @@ export default function Signup() {
           </p>
         </div>
 
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-          <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(step / 3) * 100}%` }}></div>
-        </div>
-
         {error && (
           <div className="text-red-500 text-center">
             {error}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {step === 1 && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input 
-                  id="firstName" 
-                  type="text" 
-                  placeholder="Enter First Name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input 
-                  id="lastName" 
-                  type="text" 
-                  placeholder="Enter Last Name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="age">Age</Label>
-                <Input 
-                  id="age" 
-                  type="number" 
-                  placeholder="Enter Age"
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="occupation">Occupation</Label>
-                <Input 
-                  id="occupation" 
-                  type="text" 
-                  placeholder="Enter Occupation"
-                  value={occupation}
-                  onChange={(e) => setOccupation(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Input 
-                  id="country" 
-                  type="text" 
-                  placeholder="Enter Country"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
-                <Input 
-                  id="state" 
-                  type="text" 
-                  placeholder="Enter State"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input 
-                  id="city" 
-                  type="text" 
-                  placeholder="Enter City"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  required
-                />
-              </div>
-              <Button type="button" className="w-full" size="lg" onClick={handleNext}>
-                Next
-              </Button>
-            </>
-          )}
+        <form className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="username">First Name</Label>
+            <Input 
+              id="username" 
+              type="text" 
+              placeholder="Enter First Name"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
 
-          {step === 2 && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input 
-                  id="username" 
-                  type="text" 
-                  placeholder="Enter Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="Enter Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input 
-                  id="password" 
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input 
-                  id="confirmPassword" 
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex justify-between">
-                <Button type="button" className="w-1/2 mr-2" size="lg" onClick={handleBack}>
-                  Back
-                </Button>
-                <Button type="button" className="w-1/2 ml-2" size="lg" onClick={handleNext}>
-                  Next
-                </Button>
-              </div>
-            </>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="email">Last Name</Label>
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="Enter Last Name"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-          {step === 3 && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="aadharCard">Aadhar Card (Required)</Label>
-                <Input 
-                  id="aadharCard" 
-                  type="file"
-                  onChange={(e) => setAadharCard(e.target.files ? e.target.files[0] : null)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="studentId">Student ID (Optional)</Label>
-                <Input 
-                  id="studentId" 
-                  type="file"
-                  onChange={(e) => setStudentId(e.target.files ? e.target.files[0] : null)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="panCard">PAN Card (Optional)</Label>
-                <Input 
-                  id="panCard" 
-                  type="file"
-                  onChange={(e) => setPanCard(e.target.files ? e.target.files[0] : null)}
-                />
-              </div>
-              <div className="flex justify-between">
-                <Button type="button" className="w-1/2 mr-2" size="lg" onClick={handleBack}>
-                  Back
-                </Button>
-                <Button type="submit" className="w-1/2 ml-2" size="lg">
-                  Submit
-                </Button>
-              </div>
-            </>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input 
+              id="password" 
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <Button type="submit" className="w-full" size="lg">
+            Sign Up
+          </Button>
         </form>
 
         <div className="text-center text-sm">
