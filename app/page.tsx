@@ -46,13 +46,7 @@ export default function Home() {
                 <div className="flex gap-4">
                   <Link href="/borrower">
                     <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-200 text-lg px-8">
-                      Start Borrowing
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
-                  <Link href="/lender">
-                    <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 text-lg px-8">
-                      Start Lending
+                      Start Now
                       <ChevronRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>

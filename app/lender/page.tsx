@@ -37,13 +37,13 @@ export default function BrowseRequests() {
   }
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 space-y-8 h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
         <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-5xl font-bold tracking-tight">Lender Dashboard</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6">
+        <Card className="p-6 bg-[#605EA1] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Current Limit</p>
@@ -59,7 +59,7 @@ export default function BrowseRequests() {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-[#605EA1] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Active Loans</p>
@@ -75,7 +75,7 @@ export default function BrowseRequests() {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-[#605EA1] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Closed Loans</p>
@@ -91,7 +91,7 @@ export default function BrowseRequests() {
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-6 bg-[#605EA1] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Loans Granted</p>
@@ -109,7 +109,7 @@ export default function BrowseRequests() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">
-        <Card className="col-span-4">
+        <Card className="col-span-4 bg-[#605EA1] border-gray-500">
           <div className="p-6">
             <h3 className="text-lg font-medium">Platform Activity</h3>
             <p className="text-sm text-muted-foreground">Daily platform activity over time</p>
@@ -117,7 +117,7 @@ export default function BrowseRequests() {
           <ActivityChart />
         </Card>
 
-        <Card className="col-span-3">
+        <Card className="col-span-3 bg-[#605EA1] border-gray-500">
           <div className="p-6">
             <h3 className="text-lg font-medium">Recent Loans</h3>
             <p className="text-sm text-muted-foreground">Latest loan applications</p>

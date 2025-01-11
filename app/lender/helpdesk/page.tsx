@@ -16,16 +16,16 @@ import {
 
 const faqItems = [
   {
-    question: "How do I apply for a loan?",
-    answer: "To apply for a loan, navigate to the 'Request' section, post your request, and wait for lenders to submit offers."
+    question: "How do I lend a loan?",
+    answer: "You can go to the 'Browse' section and view the loan requests. You can then select a request and submit an offer."
   },
   {
     question: "What are the interest rates?",
-    answer: "Interest rates are decided by the lender. You can view the interest rate when reviewing the loan offer."
+    answer: "You can set the interest rate when submitting an offer. The borrower will then have the option to accept or reject your offer."
   },
   {
     question: "How long does approval take?",
-    answer: "Depends on the lender. Once you receive an offer, you can review and accept or reject it."
+    answer: "Depends on the borrower. Once you submit an offer, the borrower will review and accept or reject it."
   }
 ];
 

@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/sidebar';
-import { DollarSign, History, Settings, LayoutDashboardIcon } from "lucide-react";
+import { DollarSign, History, LayoutDashboardIcon, PhoneCallIcon } from "lucide-react";
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -53,14 +53,14 @@ export default function RootLayout({
                 layout
               >
                 <Link
-                  href="/lender/loans"
+                  href="/lender/browse"
                   className={cn(
                     "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
                   )}
                 >
                   <div className="flex items-center flex-1">
                     <DollarSign className="h-5 w-5 mr-3 text-violet-500" />
-                    Loans
+                    Lend
                   </div>
                 </Link>
               </motion.div>
@@ -87,14 +87,14 @@ export default function RootLayout({
                 layout
               >
                 <Link
-                  href="/lender/settings"
+                  href="/lender/helpdesk"
                   className={cn(
                     "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
                   )}
                 >
                   <div className="flex items-center flex-1">
-                    <Settings className="h-5 w-5 mr-3 text-gray-500" />
-                    Settings
+                    <PhoneCallIcon className="h-5 w-5 mr-3 text-gray-500" />
+                    Helpdesk
                   </div>
                 </Link>
               </motion.div>
