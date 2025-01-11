@@ -69,7 +69,6 @@ export default function Login() {
               placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className='bg-transparent border border-gray-300'
               required
             />
             </motion.div>
@@ -86,7 +85,6 @@ export default function Login() {
                 placeholder="Enter Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className='bg-transparent border border-gray-300'
                 required
               />
               <motion.button
@@ -106,7 +104,6 @@ export default function Login() {
         </form>
 
         <div className="text-center text-sm">
-          <br />
           <Link
             href="/forgot-password"
             className="text-primary hover:underline"
@@ -120,14 +117,13 @@ export default function Login() {
             <div className="w-full border-t"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="px-2 text-muted-foreground">
-              <br />
+            <span className="bg-background px-2 text-muted-foreground">
               Or continue with
             </span>
           </div>
         </div>
+
         <p className="text-center text-sm">
-          <br />
           Don't have an account?{" "}
           <Link href="/signup" className="text-primary hover:underline">
             Sign Up
