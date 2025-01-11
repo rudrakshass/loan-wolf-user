@@ -17,7 +17,7 @@ export default function RequestLoan() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
       <main className="flex-1 items-center p-8">
         <Card>
           <CardHeader>

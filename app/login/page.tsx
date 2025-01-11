@@ -69,6 +69,7 @@ export default function Login() {
               placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="bg-transparent border border-gray-300"
               required
             />
             </motion.div>
@@ -85,6 +86,7 @@ export default function Login() {
                 placeholder="Enter Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="bg-transparent border border-gray-300"
                 required
               />
               <motion.button
@@ -97,10 +99,15 @@ export default function Login() {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </motion.button>
             </motion.div>
+            <br />
+          <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}>
+            <Button type="submit" className="w-full" size="lg">
+              Log In
+            </Button>
+          </motion.div>
           </div>
-          <Button type="submit" className="w-full" size="lg">
-            Log In
-          </Button>
         </form>
 
         <div className="text-center text-sm">
@@ -108,21 +115,11 @@ export default function Login() {
             href="/forgot-password"
             className="text-primary hover:underline"
           >
+            <br />
             Forgot your password?
           </Link>
         </div>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t"></div>
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
+        <br />
         <p className="text-center text-sm">
           Don't have an account?{" "}
           <Link href="/signup" className="text-primary hover:underline">

@@ -246,7 +246,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -263,7 +263,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -280,7 +280,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="age">Age</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -297,7 +297,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="occupation">Occupation</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -314,7 +314,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="country">Country</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -331,7 +331,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="state">State</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -348,7 +348,7 @@ export default function Signup() {
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>
                   <motion.div
-                    whileHover={{ scale: 1.15 }}
+                    whileHover={{ scale: 1.05 }}
                     className='relative'
                   >
                     <Input 
@@ -366,7 +366,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label htmlFor="fullAddress">Full Address</Label>
                 <motion.div
-                  whileHover={{ scale: 1.15 }}
+                  whileHover={{ scale: 1.05 }}
                   className='relative'
                 >
                   <Input 
@@ -391,7 +391,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
@@ -408,7 +408,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
@@ -425,7 +425,7 @@ export default function Signup() {
               <div className="space-y-2 relative">
                 <Label htmlFor="password">Password</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
@@ -451,7 +451,7 @@ export default function Signup() {
               <div className="space-y-2 relative">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
@@ -490,7 +490,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label htmlFor="aadharCard">Aadhar Card (Required)</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
@@ -506,7 +506,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label htmlFor="studentId">Student ID (Optional)</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
@@ -521,7 +521,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label htmlFor="panCard">PAN Card (Optional)</Label>
                 <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
                 <Input 
