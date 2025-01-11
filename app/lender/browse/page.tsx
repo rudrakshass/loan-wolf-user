@@ -27,7 +27,7 @@ export default function BrowseRequests() {
       try {
         const loanRequestsRef = collection(db, "loan_requests");
         const querySnapshot = await getDocs(loanRequestsRef);
-
+        
         const data = querySnapshot.docs.flatMap((doc) => {
           const borrowerId = doc.id;
           const loans = doc.data().loan_requests || [];
