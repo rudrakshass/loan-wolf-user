@@ -1,6 +1,8 @@
 "use client";
 
-import { supabase } from '@/lib/supabase/client';
+import { auth, db } from '@/lib/firebase/config';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,16 +22,25 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      router.push('/dashboard');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      if (user) {
+        // Get user data from Firestore
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        const userData = userDoc.data();
+        
+        if (userData?.userType === 'lender') {
+          router.push('/lender');
+        } else if (userData?.userType === 'borrower') {
+          router.push('/borrower');
+        } else {
+          router.push('/');
+        }
+      }
     } catch (error: any) {
-      setError(error.message || 'An error occurred during login');
+      console.error('Login error:', error);
+      setError(error.message || 'Failed to login');
     }
   };
 

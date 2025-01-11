@@ -100,53 +100,51 @@ export default function Signup() {
     setIsSubmitting(true);
     setError("");
 
+    if (!validateStep1() || !validateStep2()) {
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      // 1. Create Firebase auth user
+      // Create auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Prepare user details without documents
-      const userDetails = {
+      // Common user data
+      const userData = {
         uid: user.uid,
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
         age: parseInt(age),
         occupation,
         country,
         state,
         city,
-        full_address: fullAddress,
+        fullAddress,
         email,
         username,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        userType,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
 
-      // 3. Store in users collection
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        username,
-        email,
-        role: userType,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
+      // Create user document in users collection
+      console.log('Creating user document...');
+      await setDoc(doc(db, 'users', user.uid), userData);
 
-      // 4. Store in respective role collection
-      if (userType === "lender") {
-        await setDoc(doc(db, 'lender', user.uid), userDetails);
-        router.replace('/lender');
+      // Create role-specific document
+      console.log(`Creating ${userType} document...`);
+      if (userType === 'lender') {
+        await setDoc(doc(db, 'lenders', user.uid), userData);
+        router.push('/lender');
       } else {
-        await setDoc(doc(db, 'borrower', user.uid), userDetails);
-        router.replace('/borrower');
+        await setDoc(doc(db, 'borrower', user.uid), userData);
+        router.push('/borrower');
       }
-
-      console.log('User registration successful!');
 
     } catch (error: any) {
       console.error('Registration error:', error);
-      setError(error.message || 'An error occurred during signup');
-    } finally {
+      setError(error.message || 'Failed to create account');
       setIsSubmitting(false);
     }
   };
