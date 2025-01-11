@@ -134,7 +134,7 @@ export default function Signup() {
 
       if (userType === "lender") {
         await setDoc(doc(db, 'lendor', user.uid), userDetails);
-        router.replace('/lendor');
+        router.replace('/lender');
       } else {
         await setDoc(doc(db, 'borrower', user.uid), userDetails);
         router.replace('/borrower');
@@ -231,16 +231,6 @@ export default function Signup() {
             <>
               <div className="space-y-2">
                 <Label htmlFor="userType">Sign up as</Label>
-                <select
-                  id="userType"
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value as "lender" | "borrower")}
-                  className="bg-transparent border border-gray-300"
-                  required
-                >
-                  <option value="lender">Lender</option>
-                  <option value="borrower">Borrower</option>
-                </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -546,9 +536,6 @@ export default function Signup() {
                 </Button>
               {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               <div className="text-center mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Youll be redirected to the {userType === 'lender' ? 'lender' : 'borrower'} dashboard after signup
-                </p>
               </div>
               </div>
             </>
