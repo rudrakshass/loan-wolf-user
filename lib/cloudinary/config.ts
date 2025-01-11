@@ -1,24 +1,22 @@
-import { v2 as cloudinary } from 'cloudinary';
-
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true,
-});
-
 export const uploadToCloudinary = async (file: File): Promise<string> => {
   try {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('upload_preset', 'loan_wolf_docs'); // Make sure this preset exists in your Cloudinary settings
+    formData.append('api_key', process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY || '');
 
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload`,
+      {
+        method: 'POST',
+        body: formData,
+      }
+    );
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorData = await response.json();
+      console.error('Cloudinary error:', errorData);
+      throw new Error(errorData.error?.message || 'Upload failed');
     }
 
     const data = await response.json();
