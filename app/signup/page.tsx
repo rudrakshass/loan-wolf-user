@@ -1,9 +1,8 @@
 "use client";
 
-import { auth, db, storage } from '@/lib/firebase/config';
+import { auth, db } from '@/lib/firebase/config';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { ref, uploadBytes } from 'firebase/storage';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -99,64 +98,53 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    try {
-      if (password !== confirmPassword) {
-        setError("Passwords do not match");
-        return;
-      }
+    setError("");
 
+    try {
       // 1. Create Firebase auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Store user data in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        username,
-        email,
-        role: userType, // Add role to users collection
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString() 
-      });
-
+      // 2. Prepare user details without documents
       const userDetails = {
+        uid: user.uid,
         first_name: firstName,
-        last_name: lastName,  
+        last_name: lastName,
         age: parseInt(age),
         occupation,
         country,
         state,
         city,
         full_address: fullAddress,
-        email, // Add email to userDetails
+        email,
+        username,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
 
+      // 3. Store in users collection
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        username,
+        email,
+        role: userType,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+      // 4. Store in respective role collection
       if (userType === "lender") {
-        await setDoc(doc(db, 'lendor', user.uid), userDetails);
+        await setDoc(doc(db, 'lender', user.uid), userDetails);
         router.replace('/lender');
       } else {
         await setDoc(doc(db, 'borrower', user.uid), userDetails);
         router.replace('/borrower');
       }
 
-      // 3. Handle file uploads to Firebase Storage
-      if (aadharCard) {
-        const aadharRef = ref(storage, `documents/${user.uid}/aadhar`);
-        await uploadBytes(aadharRef, aadharCard);
-      }
-
-      if (studentId) {
-        const studentIdRef = ref(storage, `documents/${user.uid}/student`);
-        await uploadBytes(studentIdRef, studentId);
-      }
-
-      if (panCard) {
-        const panCardRef = ref(storage, `documents/${user.uid}/pan`);
-        await uploadBytes(panCardRef, panCard);
-      }
+      console.log('User registration successful!');
 
     } catch (error: any) {
+      console.error('Registration error:', error);
       setError(error.message || 'An error occurred during signup');
     } finally {
       setIsSubmitting(false);
