@@ -1,43 +1,54 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { Readable } from "stream";
+import { cloudinary } from "@/lib/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
-    const file = formData.get('file') as File;
-    
+    const file: File | null = formData.get("file") as File;
+
     if (!file) {
       return NextResponse.json(
-        { error: 'No file uploaded' },
+        { message: "No file uploaded" },
         { status: 400 }
       );
     }
 
-    // Convert file to base64
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const base64File = `data:${file.type};base64,${buffer.toString('base64')}`;
+    const stream = Readable.from(buffer);
 
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(base64File, {
-      folder: 'loan_wolf_docs',
-    });
+    try {
+      const uploadResult: UploadApiResponse = await new Promise(
+        (resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "loan_wolf_docs" },
+            (error, result) => {
+              if (error || !result) reject(error);
+              else resolve(result);
+            }
+          );
 
-    return NextResponse.json({
-      secure_url: result.secure_url,
-      public_id: result.public_id,
-    });
+          stream.pipe(uploadStream);
+        }
+      );
+
+      return NextResponse.json({
+        secure_url: uploadResult.secure_url,
+      });
+    } catch (uploadError) {
+      console.error("Cloudinary upload error:", uploadError);
+      return NextResponse.json(
+        { message: "Upload failed" },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Request error:", error);
     return NextResponse.json(
-      { error: 'Failed to upload file' },
-      { status: 500 }
+      { message: "Invalid request" },
+      { status: 400 }
     );
   }
 }
