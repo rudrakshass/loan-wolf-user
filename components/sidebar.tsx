@@ -31,7 +31,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           {defaultRoutes.map((route) => (
             <motion.div
               key={route.href}
-              whileHover={{ scale: 1.25 }}
+              whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.95 }}
               layout
             >
@@ -51,7 +51,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           ))}
           {children}
           <motion.div
-            whileHover={{ scale: 1.25 }}
+            whileHover={{ scale: 1.15 }}
             whileTap={{ scale: 0.95 }}
             layout
           >
@@ -72,7 +72,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
       </div>
       <div className="px-3 py-2">
         <motion.div
-          whileHover={{ scale: 1.25 }}
+          whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.95 }}
           layout
         >

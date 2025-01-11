@@ -165,7 +165,7 @@ export default function Signup() {
         className="relative"
       >
         <div className="relative space-y-2 text-center">
-          <h1 className="text-3xl font-bold">Welcome Lender</h1>
+          <h1 className="text-3xl font-bold">Welcome Borrower</h1>
           <p className="text-muted-foreground">
             Enter your credentials to create an account
           </p>

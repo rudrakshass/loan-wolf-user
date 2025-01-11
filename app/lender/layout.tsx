@@ -31,9 +31,8 @@ export default function RootLayout({
           <div className="flex h-screen">
             <Sidebar>
               <motion.div
-                whileHover={{ scale: 1.25 }}
+                whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
-                
                 layout
               >
                 <Link
@@ -50,7 +49,7 @@ export default function RootLayout({
                 </Link>
               </motion.div>
               <motion.div
-                whileHover={{ scale: 1.25 }}
+                whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
                 layout
               >
@@ -68,7 +67,7 @@ export default function RootLayout({
                 </Link>
               </motion.div>
               <motion.div
-                whileHover={{ scale: 1.25 }}
+                whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
                 layout
               >
