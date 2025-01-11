@@ -159,6 +159,11 @@ export default function Signup() {
   };
 
   return (
+    <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
     <div className="min-h-screen flex my-10 items-center justify-center">
       <div className="relative w-full max-w-xl p-8 space-y-6 bg-card rounded-lg shadow-lg border">
         <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
@@ -173,11 +178,10 @@ export default function Signup() {
           <p className="text-muted-foreground">
             Enter your credentials to create an account
           </p>
-          <br/>
-        </div>
-
-        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+          <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
           <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(step / 4) * 100}%` }}></div>
+        </div>
+          <br/>
         </div>
 
         {error && (
@@ -192,7 +196,7 @@ export default function Signup() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className={`p-6 rounded-lg border-2 cursor-pointer ${
-                  userType === 'lender' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  userType === 'lender' ? 'border-blue-500 bg-blue-50 text-black' : 'border-gray-200'
                 }`}
                 onClick={() => setUserType('lender')}
               >
@@ -203,7 +207,7 @@ export default function Signup() {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 className={`p-6 rounded-lg border-2 cursor-pointer ${
-                  userType === 'borrower' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                  userType === 'borrower' ? 'border-blue-500 bg-blue-50 text-black' : 'border-gray-200'
                 }`}
                 onClick={() => setUserType('borrower')}
               >
@@ -543,5 +547,6 @@ export default function Signup() {
       </motion.div>
       </div>
     </div>
+    </motion.div>
   );
 }

@@ -45,6 +45,11 @@ export default function Login() {
   };
 
   return (
+      <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
     <div className="min-h-screen flex my-10 items-center justify-center">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border">
       <motion.div
@@ -140,5 +145,6 @@ export default function Login() {
       </motion.div>
       </div>
     </div>
+      </motion.div>
   );
 }
