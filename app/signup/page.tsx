@@ -106,7 +106,7 @@ export default function Signup() {
         username,
         email,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString() 
       });
 
       await setDoc(doc(db, 'lendor', user.uid), {
