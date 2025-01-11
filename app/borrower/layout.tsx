@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/sidebar';
-import { DollarSign, History, Settings } from "lucide-react";
+import { DollarSign, History, Settings, LayoutDashboardIcon, PhoneCallIcon, Phone } from "lucide-react";
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -30,16 +30,32 @@ export default function RootLayout({
         >
           <div className="flex h-screen">
             <Sidebar>
+            <motion.div 
+              whileHover={{ scale: 1.15 }}
+              whileTap={{ scale: 0.95 }}
+              layout
+            >
+              <Link
+                href="/borrower"
+                className={cn(
+                  "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition"
+                )}
+              >
+                <div className="flex items-center flex-1">
+                  <LayoutDashboardIcon className={cn("h-5 w-5 mr-3")} />
+                  Dashboard
+                </div>
+              </Link>
+            </motion.div>
               <motion.div
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
                 layout
               >
                 <Link
-                  href="/loans"
+                  href="/borrower/request"
                   className={cn(
                     "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                    pathname === "/loans" ? "text-white bg-white/10" : "text-zinc-400",
                   )}
                 >
                   <div className="flex items-center flex-1">
@@ -54,10 +70,9 @@ export default function RootLayout({
                 layout
               >
                 <Link
-                  href="/history"
+                  href="/borrower/history"
                   className={cn(
                     "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                    pathname === "/history" ? "text-white bg-white/10" : "text-zinc-400",
                   )}
                 >
                   <div className="flex items-center flex-1">
@@ -72,15 +87,14 @@ export default function RootLayout({
                 layout
               >
                 <Link
-                  href="/settings"
+                  href="/borrower/helpdesk"
                   className={cn(
                     "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                    pathname === "/settings" ? "text-white bg-white/10" : "text-zinc-400",
                   )}
                 >
                   <div className="flex items-center flex-1">
-                    <Settings className="h-5 w-5 mr-3 text-gray-500" />
-                    Settings
+                    <PhoneCallIcon className="h-5 w-5 mr-3 text-gray-500" />
+                    Helpdesk
                   </div>
                 </Link>
               </motion.div>

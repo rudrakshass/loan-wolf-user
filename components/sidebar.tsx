@@ -32,27 +32,6 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           </div>
         </Link>
         <div className="space-y-1">
-          {defaultRoutes.map((route) => (
-            <motion.div
-              key={route.href}
-              whileHover={{ scale: 1.15 }}
-              whileTap={{ scale: 0.95 }}
-              layout
-            >
-              <Link
-                href="/lender"
-                className={cn(
-                  "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                  pathname === route.href ? "text-white bg-white/10" : "text-zinc-400",
-                )}
-              >
-                <div className="flex items-center flex-1">
-                  <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
-                  {route.label}
-                </div>
-              </Link>
-            </motion.div>
-          ))}
           {children}
           <motion.div
             whileHover={{ scale: 1.15 }}
