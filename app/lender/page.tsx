@@ -2,6 +2,8 @@
 
 import { ActivityChart } from "@/components/activity-chart";
 import { RecentLoans } from "@/components/recent-loans copy";
+import { auth, db } from '@/lib/firebase/config'; // Add db import
+import { doc, getDoc } from 'firebase/firestore'; // Add this import
 import {
   Users,
   Banknote,
@@ -13,7 +15,7 @@ import {
   Smile,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react"
+import { useState,useEffect } from "react"
 
 // Mock data for loan requests
 const loanRequests = [
@@ -26,6 +28,24 @@ export default function BrowseRequests() {
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
   const [interestRate, setInterestRate] = useState("")
   const [duration, setDuration] = useState("")
+  const [username, setUsername] = useState("") // Changed to include setUsername
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'lender', user.uid));
+          const userData = userDoc.data();
+          setUsername(userData?.firstName || "Guest");
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setUsername("Guest");
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSubmitOffer = () => {
     console.log({
@@ -38,9 +58,14 @@ export default function BrowseRequests() {
 
   return (
     <div className="p-8 space-y-8 h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-gray-200">Hello, {username}! 👋</h1>
+          <p className="text-gray-400 mt-1">Welcome back to your lending dashboard</p>
+        </div>
+        
         <div className="flex justify-between items-center">
-        <h2 className="text-5xl font-bold tracking-tight">Lender Dashboard</h2>
-      </div>
+          <h2 className="text-5xl font-bold tracking-tight">Lender Dashboard</h2>
+        </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6 bg-[#605EA1] border-gray-500">

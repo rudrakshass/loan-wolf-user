@@ -72,7 +72,7 @@ export default function BrowseRequests() {
                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Borrower</p>
-                      <p>{request.borrowerId}</p>
+                      <p>{request.borrowerName}</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Amount</p>

@@ -13,7 +13,9 @@ import {
   Smile,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { auth, db } from '@/lib/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 
 // Mock data for loan requests
 const loanRequests = [
@@ -22,10 +24,28 @@ const loanRequests = [
   { id: 3, borrower: "Mike R.", amount: 3000, purpose: "Education" },
 ]
 
-export default function BrowseRequests() {
+export default function BorrowerDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
   const [interestRate, setInterestRate] = useState("")
   const [duration, setDuration] = useState("")
+  const [username, setUsername] = useState("") // Add this line
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'borrower', user.uid));
+          const userData = userDoc.data();
+          setUsername(userData?.firstName || "Guest");
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setUsername("Guest");
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSubmitOffer = () => {
     console.log({
@@ -37,8 +57,13 @@ export default function BrowseRequests() {
   }
 
   return (
-    <div className="p-8 max-h-full h-full space-y-8 bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
-        <div className="flex justify-between items-center">
+    <div className="p-8 space-y-8 h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+      <div className="mb-8">
+        <h1 className="text-3xl font-semibold text-gray-200">Hello, {username}! 👋</h1>
+        <p className="text-gray-400 mt-1">Welcome back to your borrowing dashboard</p>
+      </div>
+
+      <div className="flex justify-between items-center">
         <h2 className="text-5xl font-bold tracking-tight">Borrower Dashboard</h2>
       </div>
 
