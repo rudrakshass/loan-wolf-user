@@ -41,6 +41,12 @@ const tickets = [
     subject: "Payment Confirmation",
     status: "Closed",
     updated: "1 day ago"
+  },
+  {
+    id: "T-1236",
+    subject: "Payment Confirmation",
+    status: "Closed",
+    updated: "1 day ago"
   }
 ];
 
@@ -50,7 +56,7 @@ const HelpDesk = () => {
   return (
     <div className="p-8 space-y-8 bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">Help & Support</h2>
+        <h2 className="text-5xl font-bold tracking-tight">Help & Support</h2>
       </div>
 
       {/* Search and Quick Actions */}
@@ -59,7 +65,7 @@ const HelpDesk = () => {
           <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
           <Input
             placeholder="Search for help articles..."
-            className="pl-10 h-12"
+            className="pl-10 h-12 bg-[#353369]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -67,8 +73,8 @@ const HelpDesk = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors bg-[#605EA1]">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-primary/10 rounded-full">
               <MailQuestion className="h-6 w-6 text-primary" />
@@ -80,19 +86,7 @@ const HelpDesk = () => {
           </div>
         </Card>
 
-        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <MessageCircle className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold">Live Chat</h3>
-              <p className="text-sm text-muted-foreground">Chat with support agent</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors">
+        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors bg-[#605EA1]">
           <div className="flex items-center space-x-4">
             <div className="p-3 bg-primary/10 rounded-full">
               <Clock className="h-6 w-6 text-primary" />
@@ -107,7 +101,7 @@ const HelpDesk = () => {
 
       <div className="grid gap-4 md:grid-cols-2">
         {/* FAQ Section */}
-        <Card>
+        <Card className='bg-[#605EA1]'>
           <CardHeader>
             <CardTitle>Frequently Asked Questions</CardTitle>
           </CardHeader>
@@ -122,19 +116,19 @@ const HelpDesk = () => {
         </Card>
 
         {/* Support Ticket Form */}
-        <Card>
+        <Card className='bg-[#605EA1]'>
           <CardHeader>
             <CardTitle>Submit a Support Ticket</CardTitle>
           </CardHeader>
           <CardContent>
             <form className="space-y-4">
               <div>
-                <Input placeholder="Subject" />
+                <Input className="bg-[#353369]" placeholder="Subject" />
               </div>
               <div>
                 <Textarea 
                   placeholder="Describe your issue..."
-                  className="min-h-[120px]"
+                  className="min-h-[120px] bg-[#353369]"
                 />
               </div>
               <Button className="w-full">Submit Ticket</Button>
@@ -143,7 +137,7 @@ const HelpDesk = () => {
         </Card>
       </div>
 
-      <Card>
+      <Card className='bg-[#605EA1]'>
         <CardHeader>
           <CardTitle>Your Recent Tickets</CardTitle>
         </CardHeader>
