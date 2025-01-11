@@ -1,8 +1,6 @@
 "use client";
 
-import { auth, db } from '@/lib/firebase/config';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { supabase } from '@/lib/supabase/client';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,56 +15,39 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
-
     try {
-      // 1. Sign in with Firebase Auth
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // 2. Get user role from Firestore
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      
-      if (!userDoc.exists()) {
-        throw new Error('User data not found');
-      }
+      if (error) throw error;
 
-      const userData = userDoc.data();
-      const userRole = userData.role;
-
-      // 3. Redirect based on role
-      if (userRole === 'lender') {
-        router.replace('/lender');
-      } else if (userRole === 'borrower') {
-        router.replace('/borrower');
-      } else {
-        throw new Error('Invalid user role');
-      }
-
+      router.push('/dashboard');
     } catch (error: any) {
-      setError(error.message || 'Failed to login');
-    } finally {
-      setIsLoading(false);
+      setError(error.message || 'An error occurred during login');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex my-10 items-center justify-center">
+      <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border"
+        className='relative'
       >
+      <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Welcome Back</h1>
-          <p className="text-muted-foreground">Login to your account</p>
+          <p className="text-muted-foreground">
+            Enter your credentials to log in
+          </p>
         </div>
 
         {error && (
@@ -75,29 +56,34 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
+            <motion.div
+                whileHover={{ scale: 1.05 }}
+                className='relative'
+              >
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="bg-transparent border border-gray-300"
               required
             />
+            </motion.div>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 relative">
             <Label htmlFor="password">Password</Label>
             <motion.div
-              whileHover={{ scale: 1.15 }}
+              whileHover={{ scale: 1.05 }}
               className='relative'
             >
               <Input 
                 id="password" 
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                placeholder="Enter Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-transparent border border-gray-300"
@@ -105,8 +91,10 @@ export default function Login() {
               />
               <motion.button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
                 onClick={() => setShowPassword(!showPassword)}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </motion.button>
@@ -139,6 +127,7 @@ export default function Login() {
           </Link>
         </p>
       </motion.div>
+      </div>
     </div>
   );
 }
