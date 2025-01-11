@@ -111,7 +111,7 @@ export default function Signup() {
 
       await setDoc(doc(db, 'lendor', user.uid), {
         first_name: firstName,
-        last_name: lastName,
+        last_name: lastName,  
         age: parseInt(age),
         occupation,
         country,
