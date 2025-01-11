@@ -105,7 +105,7 @@ const HelpDesk = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+    <div className="p-8 space-y-8 bg-gradient-to-r min-h-screen from-[#181127] via-purple-700 to-purple-900">
       <div className="flex justify-between items-center">
         <h2 className="text-5xl font-bold tracking-tight">Help & Support</h2>
       </div>

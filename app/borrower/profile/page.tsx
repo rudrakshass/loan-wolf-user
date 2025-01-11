@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, MapPin, Building2, GraduationCap, ThumbsDown, LogOut } from "lucide-react";
+import { Pencil, MapPin, LogOut } from "lucide-react";
 // import { doc, getDoc, collection, query, getDocs, updateDoc } from "firebase/firestore";
 // import { getAuth, signOut } from "firebase/auth";
 // import { useRouter } from "next/navigation";
@@ -27,6 +27,7 @@ interface UserData {
   gender?: string;
   address?: string;
   completedLoans?: number;
+  role?: string; // Added role property
 }
 
 interface Post {
@@ -51,7 +52,8 @@ export default function Profile() {
     age: 30,
     gender: "Male",
     address: "123 Main St, Anytown, USA",
-    completedLoans: 5
+    completedLoans: 5,
+    role: "Lender" // Default role
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [posts, setPosts] = useState<Post[]>([
@@ -91,7 +93,8 @@ export default function Profile() {
       //     age: fetchedUserData.age,
       //     gender: fetchedUserData.gender,
       //     address: fetchedUserData.address,
-      //     completedLoans: fetchedUserData.completedLoans
+      //     completedLoans: fetchedUserData.completedLoans,
+      //     role: fetchedUserData.role || "Lender" // Default role
       //   });
       // } else {
       //   console.error("No user document found!");
@@ -124,7 +127,8 @@ export default function Profile() {
         age: 30,
         gender: "Male",
         address: "123 Main St, Anytown, USA",
-        completedLoans: 5
+        completedLoans: 5,
+        role: "Lender" // Default role
       });
       setPosts([
         { id: "1", title: "Dummy Post 1", content: "This is a dummy post.", userId: "1" },
@@ -167,7 +171,8 @@ export default function Profile() {
       age: userData?.age,
       gender: userData?.gender,
       address: userData?.address,
-      completedLoans: userData?.completedLoans
+      completedLoans: userData?.completedLoans,
+      role: userData?.role || "Lender" // Default role
     });
     setIsModalOpen(true);
   };
@@ -299,7 +304,8 @@ export default function Profile() {
       //   age: edit.age,
       //   gender: edit.gender,
       //   address: edit.address,
-      //   completedLoans: edit.completedLoans
+      //   completedLoans: edit.completedLoans,
+      //   role: edit.role
       // });
   
       setUserData(prev => ({
@@ -314,7 +320,8 @@ export default function Profile() {
         age: edit.age,
         gender: edit.gender,
         address: edit.address,
-        completedLoans: edit.completedLoans
+        completedLoans: edit.completedLoans,
+        role: edit.role
       }));
   
       toast.success("Profile successfully updated!");
@@ -336,65 +343,67 @@ export default function Profile() {
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
   return (
-    <div className="container mx-auto mt-0 px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-4">
+    <div className="container mt-0 px-4 py-8">
+      <div className="max-w-xl bg-transparent mx-auto my-36 space-y-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
+            <div className="relative">
+          <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
           <Card className="relative">
             <div className="p-6">
-              <Avatar className="w-20 h-20 border-4 border-background relative left-2">
-                <AvatarImage 
-                  src={avatarSrc} 
-                  alt={`${userData?.username || 'User'}'s avatar`} 
-                  className="rounded-full object-cover"
-                  loading="lazy"
-                />
-                <AvatarFallback>{userData?.username?.[0] || 'U'}</AvatarFallback>
-              </Avatar>
-              <div className="mt-5">
-              <div className="flex flex-col sm:flex-row justify-between items-start space-y-2 sm:space-y-0">
-                <div>
-                  <h1 className="text-2xl font-bold">Hello! {userData?.username || "User"}</h1>
-                  <p className="text-muted-foreground">{userData?.email}</p>
-                  <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{userData?.location || "Unknown location"}</span>
-                  </div>
-                  <div className="mt-2 text-sm text-muted-foreground">
-                    <p>Age: {userData?.age || "N/A"}</p>
-                    <p>Gender: {userData?.gender || "N/A"}</p>
-                    <p>Address: {userData?.address || "N/A"}</p>
-                    <p>Completed Loans: {userData?.completedLoans || 0}</p>
-                  </div>
+              <div className="flex justify-center">
+                <Avatar className="w-24 h-24 border-4 border-background -mt-12">
+                  <AvatarImage 
+                    src={avatarSrc} 
+                    alt={`${userData?.username || 'User'}'s avatar`} 
+                    className="rounded-full object-cover"
+                    loading="lazy"
+                  />
+                  <AvatarFallback>{userData?.username?.[0] || 'U'}</AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="mt-5 text-center">
+                <h1 className="text-2xl font-bold">{userData?.username || "User"}</h1>
+                <p className="text-muted-foreground">{userData?.email}</p>
+                <p className="text-muted-foreground">{userData?.role || "N/A"}</p> {/* Display role */}
+                <div className="flex justify-center items-center gap-2 mt-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4" />
+                  <span>{userData?.location || "Unknown location"}</span>
                 </div>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleOpenModal}>
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button variant="ghost" size="sm" className="w-full sm:w-auto border border-border" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <div className="p-4 border border-border rounded-lg">
+                    <p className="text-lg font-bold">Age: <span className="font-normal">{userData?.age || "N/A"}</span></p>
+                    <p className="text-lg font-bold">Gender: <span className="font-normal">{userData?.gender || "N/A"}</span></p>
+                    <p className="text-lg font-bold">Address: <span className="font-normal">{userData?.address || "N/A"}</span></p>
+                    <p className="text-lg font-bold">Completed Loans: <span className="font-normal">{userData?.completedLoans || 0}</span></p>
+                  </div>
                 </div>
               </div>
-                <div className="mt-6">
-                  <p className="text-sm text-muted-foreground">{userData?.bio || "No bio available"}</p>
-                </div>
-
-
+              <div className="flex justify-center gap-2 mt-4">
+                <Button variant="outline" size="sm" onClick={handleOpenModal}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+                <Button variant="ghost" size="sm" className="border border-border" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+              <div className="mt-6 text-center">
+                <p className="text-sm text-muted-foreground">{userData?.bio || "No bio available"}</p>
               </div>
             </div>
           </Card> 
+          </div>
         </motion.div>
 
         <AnimatePresence>
         {isModalOpen && (
   <motion.div
-    className="fixed inset-0 bg-[rgba(0,0,0,0.83)] flex justify-center items-center z-50 p-4"
+    className="fixed inset-0 bg-transparent flex justify-center items-center z-50 p-4"
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
@@ -437,7 +446,6 @@ export default function Profile() {
             />
           </div>
         </div>
-
         <div className="mb-4">
           <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
             Bio
@@ -450,6 +458,7 @@ export default function Profile() {
             onChange={handleEditChange}
           />
         </div>
+
 
         <div className="mb-4">
         <label htmlFor="profilepic" className="block text-sm font-medium mb-2">
