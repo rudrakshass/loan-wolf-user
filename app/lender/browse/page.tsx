@@ -57,13 +57,13 @@ export default function BrowseRequests() {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
       <main className="flex-1 p-8">
         <div className="grid gap-6">
           <h1 className="text-2xl font-bold">Browse Loan Requests</h1>
 
           {loanRequests.map((request) => (
-            <Card key={request.id}>
+            <Card key={request.id} className="bg-[#605EA1] border-gray-500">
               <CardHeader>
                 <CardTitle>Loan Request #{request.id}</CardTitle>
               </CardHeader>
@@ -110,6 +110,7 @@ export default function BrowseRequests() {
                             value={interestRate}
                             onChange={(e) => setInterestRate(e.target.value)}
                             placeholder="Enter interest rate"
+                            className="bg-[#353369] border-white"
                           />
                         </div>
                         <div className="grid gap-2">
@@ -120,6 +121,7 @@ export default function BrowseRequests() {
                             value={duration}
                             onChange={(e) => setDuration(e.target.value)}
                             placeholder="Enter loan duration"
+                            className="bg-[#353369] border-white"
                           />
                         </div>
                         <Button onClick={handleSubmitOffer}>Submit Offer</Button>

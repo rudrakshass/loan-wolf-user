@@ -39,7 +39,7 @@ export default function BrowseRequests() {
   return (
     <div className="p-8 max-h-full h-full space-y-8 bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
         <div className="flex justify-between items-center">
-        <h2 className="text-5xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-5xl font-bold tracking-tight">Borrower Dashboard</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
