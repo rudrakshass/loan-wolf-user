@@ -1,6 +1,9 @@
 "use client";
 
-import { supabase } from '@/lib/supabase/client';
+import { auth, db, storage } from '@/lib/firebase/config';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -94,58 +97,41 @@ export default function Signup() {
         return;
       }
 
-      // 1. First create the auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      // 1. Create Firebase auth user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Store user data in Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        first_name: firstName,
+        age: parseInt(age),
+        occupation,
+        country,
+        state,
+        city,
+        username,
         email,
-        password,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       });
 
-      if (authError) throw authError;
-
-      if (authData.user) {
-        // 2. Then insert the additional user data
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: authData.user.id,
-              first_name: firstName,
-              last_name: lastName,
-              age: parseInt(age),
-              occupation,
-              country,
-              state,
-              city,
-              username,
-              email,
-            }
-          ]);
-
-        if (profileError) throw profileError;
-
-        // 3. Handle file uploads if needed
-        if (aadharCard) {
-          const { error: aadharError } = await supabase.storage
-            .from('documents')
-            .upload(`${authData.user.id}/aadhar`, aadharCard);
-          if (aadharError) throw aadharError;
-        }
-
-        // Optional document uploads
-        if (studentId) {
-          await supabase.storage
-            .from('documents')
-            .upload(`${authData.user.id}/student`, studentId);
-        }
-
-        if (panCard) {
-          await supabase.storage
-            .from('documents')
-            .upload(`${authData.user.id}/pan`, panCard);
-        }
-
-        router.push('/dashboard');
+      // 3. Handle file uploads to Firebase Storage
+      if (aadharCard) {
+        const aadharRef = ref(storage, `documents/${user.uid}/aadhar`);
+        await uploadBytes(aadharRef, aadharCard);
       }
+
+      if (studentId) {
+        const studentIdRef = ref(storage, `documents/${user.uid}/student`);
+        await uploadBytes(studentIdRef, studentId);
+      }
+
+      if (panCard) {
+        const panCardRef = ref(storage, `documents/${user.uid}/pan`);
+        await uploadBytes(panCardRef, panCard);
+      }
+
+      router.push('/dashboard');
     } catch (error: any) {
       setError(error.message || 'An error occurred during signup');
     }
