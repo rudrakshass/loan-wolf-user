@@ -1,33 +1,105 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { ArrowRight, DollarSign, Shield, Clock, ChevronRight } from "lucide-react"
+"use client";
+
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRight, DollarSign, Shield, Clock, ChevronRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { user, userData } = useAuth();
+  const router = useRouter();
+
+  // Add welcome banner
+  const WelcomeBanner = () => {
+    if (user && userData) {
+      return (
+        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-b border-white/10">
+          <div className="container mx-auto px-6 py-2">
+            <p className="text-gray-200 text-sm">
+              Welcome back, <span className="font-semibold">{userData.username || user.email}</span>
+            </p>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const handleStartNow = () => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    // Redirect based on user type
+    if (userData?.userType === "lender") {
+      router.push("/lender");
+    } else if (userData?.userType === "borrower") {
+      router.push("/borrower");
+    } else {
+      router.push("/signup");
+    }
+  };
+
+  // Update the nav buttons based on auth state
+  const renderAuthButtons = () => {
+    if (user) {
+      return (
+        <Button
+          variant="ghost"
+          className="text-purple-500 hover:text-purple-400 hover:bg-white/10"
+          onClick={() =>
+            router.push(userData?.userType === "lender" ? "/lender" : "/borrower")
+          }
+        >
+          Go to Dashboard
+        </Button>
+      );
+    }
+
+    return (
+      <div className="space-x-4">
+        <Link href="/login">
+          <Button
+            variant="ghost"
+            className="text-purple-500 hover:text-purple-400 hover:bg-white/10"
+          >
+            Sign In
+          </Button>
+        </Link>
+        <Link href="/signup">
+          <Button className="bg-white text-gray-900 hover:bg-gradient-to-r from-white to-purple-400">
+            Get Started
+          </Button>
+        </Link>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen">
       <div className="relative">
         <div className="absolute inset-0 bg-background">
-          <div className="absolute inset-0" style={{
-            backgroundImage: "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)",
-            backgroundSize: "40px 40px"
-          }}></div>
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)",
+              backgroundSize: "40px 40px",
+            }}
+          ></div>
         </div>
 
         <div className="relative">
+          <WelcomeBanner />
           <nav className="border-b border-white/10">
             <div className="container mx-auto px-6 py-4">
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-purple-500 bg-clip-text text-transparent">
                   Loan<span className="text-primary">Wolf</span>
                 </h1>
-                <div className="space-x-4">
-                  <Link href="/login">
-                    <Button variant="ghost" className="text-purple-500 hover:text-purple-400 hover:bg-white/10">Sign In</Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button className="bg-white text-gray-900 hover:bg-gradient-to-r from-white to-purple-400 ">Get Started</Button>
-                  </Link>
-                </div>
+                {renderAuthButtons()}
               </div>
             </div>
           </nav>
@@ -44,12 +116,14 @@ export default function Home() {
                   Join the future of lending. Connect directly with verified borrowers and lenders on our secure platform.
                 </p>
                 <div className="flex gap-4">
-                  <Link href="/borrower">
-                    <Button size="lg" className="bg-white text-gray-900 hover:bg-gray-200 text-lg px-8">
-                      Start Now
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    className="bg-white text-gray-900 hover:bg-gray-200 text-lg px-8"
+                    onClick={handleStartNow}
+                  >
+                    {user ? "Start Now" : "Sign In to Start"}
+                    <ChevronRight className="ml-2 h-5 w-5" />
+                  </Button>
                 </div>
               </div>
               <div className="relative hidden lg:block">
@@ -96,23 +170,6 @@ export default function Home() {
                 <div className="relative bg-gray-900/50 backdrop-blur-sm p-8 rounded-lg border border-white/10">
                   <DollarSign className="w-12 h-12 text-blue-400 mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">Smart Rates</h3>
-                  <p className="text-gray-400">AI-powered rate matching system for optimal lending outcomes.</p>
-                </div>
-              </div>
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg blur transition group-hover:opacity-100 group-hover:duration-200"></div>
-                <div className="relative bg-gray-900/50 backdrop-blur-sm p-8 rounded-lg border border-white/10">
-                  <Shield className="w-12 h-12 text-purple-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Bank-Grade Security</h3>
-                  <p className="text-gray-400">Enterprise-level encryption and identity verification systems.</p>
-                </div>
-              </div>
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-pink-500/20 to-red-500/20 rounded-lg blur transition group-hover:opacity-100 group-hover:duration-200"></div>
-                <div className="relative bg-gray-900/50 backdrop-blur-sm p-8 rounded-lg border border-white/10">
-                  <Clock className="w-12 h-12 text-pink-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Instant Matching</h3>
-                  <p className="text-gray-400">Get matched with the right lender in minutes, not days.</p>
                 </div>
               </div>
             </div>
@@ -120,5 +177,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
+  );
 }

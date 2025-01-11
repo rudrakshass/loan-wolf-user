@@ -5,11 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { auth, db } from "@/lib/firebase/config"
-import { arrayUnion, doc, setDoc } from "firebase/firestore"
+import { arrayUnion, doc, setDoc, getDoc } from "firebase/firestore"
 import { AlertCircle, CheckCircle } from "lucide-react"
-
 
 const tickets = [
   {
@@ -35,42 +34,70 @@ const tickets = [
 export default function RequestLoan() {
   const [amount, setAmount] = useState<number>(1000)
   const [purpose, setPurpose] = useState("")
+  const [borrowerName, setBorrowerName] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const fetchBorrowerName = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'borrower', user.uid));
+          const userData = userDoc.data();
+          if (userData?.firstName) {
+            setBorrowerName(userData.firstName);
+          }
+        } catch (error) {
+          console.error("Error fetching borrower name:", error);
+        }
+      }
+    };
+    fetchBorrowerName();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
   
     try {
+      const borrowerId = auth.currentUser?.uid;
+      if (!borrowerId || !borrowerName) {
+        throw new Error("User information not available");
+      }
+
       const loanDetails = {
-        amount: amount,
+        amount,
         purpose,
-        borrowerId: auth.currentUser?.uid || "unknown", 
-        created_at: new Date().toISOString(), 
+        borrowerId,
+        borrowerName,
+        created_at: new Date().toISOString(),
         status: "pending",
       };
-      console.log("Submitting loan request:", auth.currentUser?.uid);
-      const borrowerId = auth.currentUser?.uid;
-    if (!borrowerId) {
-      throw new Error("User is not authenticated.");
-    }
 
-      const loanDocRef = doc(db, "loan_requests", borrowerId);
+      // First, create an individual loan request document
+      const loanRequestRef = doc(db, "loan_requests", `${borrowerId}_${Date.now()}`);
+      await setDoc(loanRequestRef, loanDetails);
+
+      // Then, update the user's loan requests array
+      const userLoanRequestsRef = doc(db, "borrower", borrowerId);
       await setDoc(
-        loanDocRef,
+        userLoanRequestsRef,
         {
           loan_requests: arrayUnion(loanDetails),
         },
         { merge: true }
       );
-      console.log("Loan request submitted successfully:", loanDetails);  
+
       alert("Loan request submitted successfully!");
-      setAmount(500);
-      setPurpose("")
+      setAmount(1000);
+      setPurpose("");
     } catch (error) {
       console.error("Error submitting loan request:", error);
-      alert("Failed to submit loan request. Please try again later.");
+      alert(error instanceof Error ? error.message : "Failed to submit loan request");
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900 px-14">
@@ -111,8 +138,8 @@ export default function RequestLoan() {
                 />
               </div>
 
-              <Button type="submit" className="w-full">
-                Submit Loan Request
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Submitting..." : "Submit Loan Request"}
               </Button>
             </form>
           </CardContent>

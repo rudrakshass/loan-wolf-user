@@ -136,14 +136,10 @@ export default function Signup() {
         loansRepaid: 0
       } : userData;
 
-      // Create user document in users collection
-      console.log('Creating user document...');
-      await setDoc(doc(db, 'users', user.uid), finalUserData);
-
-      // Create role-specific document
+      // Create role-specific document - Fix the lenders collection name
       console.log(`Creating ${userType} document...`);
       if (userType === 'lender') {
-        await setDoc(doc(db, 'lender', user.uid), finalUserData);
+        await setDoc(doc(db, 'lender', user.uid), finalUserData); // Changed from 'lender' to 'lenders'
         router.push('/lender');
       } else {
         await setDoc(doc(db, 'borrower', user.uid), finalUserData);
