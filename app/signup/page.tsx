@@ -103,14 +103,21 @@ export default function Signup() {
 
       // 2. Store user data in Firestore
       await setDoc(doc(db, 'users', user.uid), {
+        username,
+        email,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+
+      await setDoc(doc(db, 'lendor', user.uid), {
         first_name: firstName,
+        last_name: lastName,
         age: parseInt(age),
         occupation,
         country,
         state,
         city,
-        username,
-        email,
+        full_address: fullAddress,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       });
