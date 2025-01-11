@@ -18,7 +18,7 @@ export default function RequestLoan() {
 
   return (
     <div className="flex min-h-screen">
-      <main className="flex-1 p-8">
+      <main className="flex-1 items-center p-8">
         <Card>
           <CardHeader>
             <CardTitle>Request a Loan</CardTitle>
