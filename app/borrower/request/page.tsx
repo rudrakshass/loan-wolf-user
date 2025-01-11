@@ -7,32 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { auth, db } from "@/lib/firebase/config"
-import { arrayUnion, doc, setDoc, getDoc } from "firebase/firestore"
-import { AlertCircle, CheckCircle } from "lucide-react"
-
-const tickets = [
-  {
-    id: "T-1234",
-    subject: "Loan Application Status",
-    status: "Open",
-    updated: "10 days left"
-  },
-  {
-    id: "T-1235",
-    subject: "Payment Confirmation",
-    status: "Closed",
-    updated: "Closed 2 days ago",
-  },
-  {
-    id: "T-1235",
-    subject: "Payment Confirmation",
-    status: "Closed",
-    updated: "Closed 2 days ago",
-  }
-];
+import { arrayUnion, doc, setDoc } from "firebase/firestore"
 
 export default function RequestLoan() {
-  const [amount, setAmount] = useState<number>(1000)
+  const [amount, setAmount] = useState<number>(500)
   const [purpose, setPurpose] = useState("")
   const [borrowerName, setBorrowerName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -100,11 +78,9 @@ export default function RequestLoan() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900 px-14">
-      <main className="flex-1 items-center py-8">
-        <h2 className="text-5xl font-bold tracking-tight">Requests</h2>
-        <br />
-        <Card className="bg-[#605EA1] max-w-7xl">
+    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+      <main className="flex-1 items-center p-8">
+        <Card>
           <CardHeader>
             <CardTitle>Request a Loan</CardTitle>
             <CardDescription>
@@ -112,7 +88,7 @@ export default function RequestLoan() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4 ">
+            <form onSubmit={handleSubmit} className="space-y-6 ">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Loan Amount: ₹{amount}</label>
                 <Slider
@@ -121,6 +97,7 @@ export default function RequestLoan() {
                   max={20000}
                   min={1000}
                   step={100}
+                  className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>₹1,000</span>
@@ -134,7 +111,6 @@ export default function RequestLoan() {
                   placeholder="Briefly describe why you need this loan"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  className="bg-[#353369]"
                 />
               </div>
 
@@ -144,35 +120,6 @@ export default function RequestLoan() {
             </form>
           </CardContent>
         </Card>
-        <br />
-        <Card className="max-w-7xl bg-[#605EA1]"> 
-        <CardHeader>
-          <CardTitle>Your Recent Requests</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {tickets.map((ticket) => (
-              <div key={ticket.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
-                  {ticket.status === "Open" ? (
-                    <AlertCircle className="h-5 w-5 text-yellow-500" />
-                  ) : (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  )}
-                  <div>
-                    <p className="font-medium">Lender's Name: Ramu Ji</p>
-                    <p className="text-sm text-muted-foreground">Request ID: {ticket.id}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">{ticket.status}</p>
-                  <p className="text-sm text-muted-foreground">{ticket.updated}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
       </main>
     </div>
   )
