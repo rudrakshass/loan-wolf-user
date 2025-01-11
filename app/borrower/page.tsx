@@ -19,7 +19,6 @@ export default function RequestLoan() {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar/>
       <main className="flex-1 p-8">
         <Card>
           <CardHeader>

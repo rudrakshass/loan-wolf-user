@@ -27,20 +27,20 @@ export default function RequestLoan() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 ">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Loan Amount: ${amount}</label>
+                <label className="text-sm font-medium">Loan Amount: ₹{amount}</label>
                 <Slider
                   value={[amount]}
                   onValueChange={(value) => setAmount(value[0])}
-                  max={50000}
+                  max={20000}
                   min={1000}
                   step={100}
                   className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>$1,000</span>
-                  <span>$50,000</span>
+                  <span>₹1,000</span>
+                  <span>₹20,000</span>
                 </div>
               </div>
 
