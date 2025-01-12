@@ -86,7 +86,7 @@ const HelpDesk = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-5xl font-bold tracking-tight">History</h2>
       </div>
-      <Card className='bg-[#605EA1] h-[83%] overflow-hidden pb-5'>
+      <Card className='bg-[#050e1a] border-gray-500 h-[83%] overflow-hidden pb-5'>
         <CardHeader>
           <CardTitle>All Your Requests</CardTitle>
         </CardHeader>

@@ -65,7 +65,7 @@ const HelpDesk = () => {
           <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
           <Input
             placeholder="Search for help articles..."
-            className="pl-10 h-12 bg-[#353369]"
+            className="pl-10 h-12 bg-[#081c36]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -74,7 +74,7 @@ const HelpDesk = () => {
 
       <div className="grid gap-4 md:grid-cols-2">
         {/* FAQ Section */}
-        <Card className='bg-[#605EA1]'>
+        <Card className='bg-[#050e1a] border-gray-500'>
           <CardHeader>
             <CardTitle>Frequently Asked Questions</CardTitle>
           </CardHeader>
@@ -89,19 +89,19 @@ const HelpDesk = () => {
         </Card>
 
         {/* Support Ticket Form */}
-        <Card className='bg-[#605EA1]'>
+        <Card className='bg-[#050e1a] border-gray-500'>
           <CardHeader>
             <CardTitle>Submit a Support Ticket</CardTitle>
           </CardHeader>
           <CardContent>
             <form className="space-y-4">
               <div>
-                <Input className="bg-[#353369]" placeholder="Subject" />
+                <Input className="bg-[#081c36]" placeholder="Subject" />
               </div>
               <div>
                 <Textarea 
                   placeholder="Describe your issue..."
-                  className="min-h-[120px] bg-[#353369]"
+                  className="min-h-[120px] bg-[#081c36]"
                 />
               </div>
               <Button className="w-full">Submit Ticket</Button>
@@ -110,7 +110,7 @@ const HelpDesk = () => {
         </Card>
       </div>
 
-      <Card className='bg-[#605EA1]'>
+      <Card className='bg-[#050e1a] border-gray-500'>
         <CardHeader>
           <CardTitle>Your Recent Tickets</CardTitle>
         </CardHeader>

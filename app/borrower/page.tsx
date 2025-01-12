@@ -13,7 +13,9 @@ import {
   Smile,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { auth, db } from '@/lib/firebase/config';
+import { doc, getDoc } from 'firebase/firestore';
 
 // Mock data for loan requests
 const loanRequests = [
@@ -22,10 +24,28 @@ const loanRequests = [
   { id: 3, borrower: "Mike R.", amount: 3000, purpose: "Education" },
 ]
 
-export default function BrowseRequests() {
+export default function BorrowerDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
   const [interestRate, setInterestRate] = useState("")
   const [duration, setDuration] = useState("")
+  const [username, setUsername] = useState("") // Add this line
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'borrower', user.uid));
+          const userData = userDoc.data();
+          setUsername(userData?.firstName || "Guest");
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          setUsername("Guest");
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSubmitOffer = () => {
     console.log({
@@ -37,13 +57,18 @@ export default function BrowseRequests() {
   }
 
   return (
-    <div className="p-8 max-h-full h-full space-y-8 bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
-        <div className="flex justify-between items-center">
+    <div className="p-8 space-y-8 h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+      <div className="mb-8">
+        <h1 className="text-3xl font-semibold text-gray-200">Hello, {username}! 👋</h1>
+        <p className="text-gray-400 mt-1">Welcome back to your borrowing dashboard</p>
+      </div>
+
+      <div className="flex justify-between items-center">
         <h2 className="text-5xl font-bold tracking-tight">Borrower Dashboard</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6 bg-[#605EA1] border-gray-500">
+        <Card className="p-6 bg-[#050e1a] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Current Limit</p>
@@ -59,7 +84,7 @@ export default function BrowseRequests() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-[#605EA1] border-gray-500">
+        <Card className="p-6 bg-[#050e1a] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Active Loans</p>
@@ -75,7 +100,7 @@ export default function BrowseRequests() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-[#605EA1] border-gray-500">
+        <Card className="p-6 bg-[#050e1a] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Closed Loans</p>
@@ -91,7 +116,7 @@ export default function BrowseRequests() {
           </div>
         </Card>
 
-        <Card className="p-6 bg-[#605EA1] border-gray-500">
+        <Card className="p-6 bg-[#050e1a] border-gray-500">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Loans Taken</p>
@@ -109,7 +134,7 @@ export default function BrowseRequests() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">
-        <Card className="col-span-4 bg-[#605EA1] border-gray-500">
+        <Card className="col-span-4 bg-[#050e1a] border-gray-500">
           <div className="p-6">
             <h3 className="text-lg font-medium">Platform Activity</h3>
             <p className="text-sm text-muted-foreground">Daily platform activity over time</p>
@@ -117,7 +142,7 @@ export default function BrowseRequests() {
           <ActivityChart />
         </Card>
 
-        <Card className="col-span-3 bg-[#605EA1] border-gray-500">
+        <Card className="col-span-3 bg-[#050e1a] border-gray-500">
           <div className="p-6">
             <h3 className="text-lg font-medium">Recent Loans</h3>
             <p className="text-sm text-muted-foreground">Latest loan applications</p>
@@ -127,4 +152,4 @@ export default function BrowseRequests() {
       </div>
     </div>
   )
-}
+} 

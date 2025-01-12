@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/sidebar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { auth, db } from "@/lib/firebase/config"
@@ -77,7 +78,7 @@ export default function RequestLoan() {
       <main className="flex-1 items-center py-8">
         <h2 className="text-5xl font-bold tracking-tight">Requests</h2>
         <br />
-        <Card className="bg-[#605EA1] max-w-7xl">
+        <Card className="bg-[#050e1a] border-gray-500 max-w-7xl">
           <CardHeader>
             <CardTitle>Request a Loan</CardTitle>
             <CardDescription>
@@ -103,11 +104,11 @@ export default function RequestLoan() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Loan Purpose</label>
-                <Input
+                <Textarea
                   placeholder="Briefly describe why you need this loan"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  className="bg-[#353369]"
+                  className="bg-[#081c36]"
                 />
               </div>
 
@@ -118,7 +119,7 @@ export default function RequestLoan() {
           </CardContent>
         </Card>
         <br />
-        <Card className="max-w-7xl bg-[#605EA1]"> 
+        <Card className="max-w-7xl bg-[#050e1a] border-gray-500"> 
         <CardHeader>
           <CardTitle>Your Recent Requests</CardTitle>
         </CardHeader>
