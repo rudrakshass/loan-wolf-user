@@ -7,10 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pencil, MapPin, LogOut } from "lucide-react";
-// import { doc, getDoc, collection, query, getDocs, updateDoc } from "firebase/firestore";
-// import { getAuth, signOut } from "firebase/auth";
-// import { useRouter } from "next/navigation";
-// import { firebaseApp, db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
+import { useRouter } from "next/navigation";
 import { HashLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
@@ -19,14 +18,17 @@ interface UserData {
   email: string;
   location?: string;
   profilepic?: string;
-  failedExperience?: string[];
-  misEducation?: string[];
-  failureHighlights?: string[];
   age?: number;
   gender?: string;
   address?: string;
   completedLoans?: number;
-  role?: string; // Added role property
+  role?: string;
+  activeLoans?: number;
+  totalLent?: number;
+  averageInterestRate?: number;
+  status: string;  // Make status required
+  verificationStatus?: string;
+  accountBalance?: number;
 }
 
 interface Post {
@@ -44,14 +46,11 @@ export default function Profile() {
     email: "john.doe@example.com",
     location: "Unknown",
     profilepic: "",
-    failedExperience: ["Failed startup", "Lost job"],
-    misEducation: ["Dropped out of college"],
-    failureHighlights: ["Bankruptcy", "Divorce"],
     age: 30,
     gender: "Male",
     address: "123 Main St, Anytown, USA",
     completedLoans: 5,
-    role: "Lender" // Default role
+    role: "Lender"
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [posts, setPosts] = useState<Post[]>([
@@ -61,83 +60,42 @@ export default function Profile() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  // const router = useRouter();
+  const router = useRouter();
   const fetchUserData = useCallback(async () => {
-    // const auth = getAuth(firebaseApp);
-    // const user = auth.currentUser;
-    
-    // if (!user) {
-    //   router.push("/login");
-    //   return;
-    // }
+    const user = auth.currentUser;
+    if (!user) {
+      router.push("/login");
+      return;
+    }
 
     try {
-      // const userDoc = doc(db, "users", user.uid);
-      // const docSnap = await getDoc(userDoc);
-    
-      // if (docSnap.exists()) {
-      //   const fetchedUserData = docSnap.data() as UserData;
-      //   setUserData(fetchedUserData);
-        
-      //   setEdit({
-      //     username: fetchedUserData.username || "",
-      //     email: fetchedUserData.email || "",
-      //     location: fetchedUserData.location || "",
-      //     bio: fetchedUserData.bio || "",
-      //     profilepic: fetchedUserData.profilepic || "",
-      //     failedExperience: fetchedUserData.failedExperience || [],
-      //     misEducation: fetchedUserData.misEducation || [],
-      //     failureHighlights: fetchedUserData.failureHighlights || [],
-      //     age: fetchedUserData.age,
-      //     gender: fetchedUserData.gender,
-      //     address: fetchedUserData.address,
-      //     completedLoans: fetchedUserData.completedLoans,
-      //     role: fetchedUserData.role || "Lender" // Default role
-      //   });
-      // } else {
-      //   console.error("No user document found!");
-      //   setUserData(null);
-      // }
-    
-      // const postsCollection = collection(db, "posts"); 
-      // const postsQuery = query(postsCollection); 
-    
-      // const querySnapshot = await getDocs(postsQuery); 
-      // const fetchedPosts: Post[] = querySnapshot.docs
-      //   .map((doc) => ({
-      //     id: doc.id,
-      //     ...(doc.data() as Omit<Post, "id">), 
-      //   }))
-      //   .filter((post) => post.userId === user.uid); 
-    
-      // setPosts(fetchedPosts); 
-
-      // Dummy data
-      setUserData({
-        username: "John Doe",
-        email: "john.doe@example.com",
-        location: "Unknown",
-        profilepic: "",
-        failedExperience: ["Failed startup", "Lost job"],
-        misEducation: ["Dropped out of college"],
-        failureHighlights: ["Bankruptcy", "Divorce"],
-        age: 30,
-        gender: "Male",
-        address: "123 Main St, Anytown, USA",
-        completedLoans: 5,
-        role: "Lender" // Default role
-      });
-      setPosts([
-        { id: "1", title: "Dummy Post 1", content: "This is a dummy post.", userId: "1" },
-        { id: "2", title: "Dummy Post 2", content: "This is another dummy post.", userId: "1" }
-      ]);
+      const userDoc = await getDoc(doc(db, "lender", user.uid));
+      if (userDoc.exists()) {
+        const fetchedUserData = userDoc.data() as UserData;
+        setUserData({
+          username: fetchedUserData.username || "",
+          email: fetchedUserData.email || "",
+          location: fetchedUserData.location || "",
+          profilepic: fetchedUserData.profilepic || "",
+          age: fetchedUserData.age || 0,
+          gender: fetchedUserData.gender || "",
+          address: fetchedUserData.address || "",
+          role: "Lender",
+          activeLoans: fetchedUserData.activeLoans || 0,
+          totalLent: fetchedUserData.totalLent || 0,
+          averageInterestRate: fetchedUserData.averageInterestRate || 0,
+          status: fetchedUserData.status || "Active",
+          verificationStatus: fetchedUserData.verificationStatus || "Pending",
+          accountBalance: fetchedUserData.accountBalance || 0
+        });
+      }
     } catch (error) {
-      console.error("Error fetching user data or posts:", error);
-      toast.error("Failed to fetch user data");
+      console.error("Error fetching lender data:", error);
+      toast.error("Failed to fetch lender data");
     } finally {
       setLoading(false);
     }
-}, []); // Removed router dependency
+  }, [router]);
     
   useEffect(() => {
     fetchUserData();
@@ -161,14 +119,11 @@ export default function Profile() {
       email: userData?.email || "",
       location: userData?.location || "",
       profilepic: userData?.profilepic || "",
-      failedExperience: userData?.failedExperience || [],
-      misEducation: userData?.misEducation || [],
-      failureHighlights: userData?.failureHighlights || [],
       age: userData?.age,
       gender: userData?.gender,
       address: userData?.address,
       completedLoans: userData?.completedLoans,
-      role: userData?.role || "Lender" // Default role
+      role: userData?.role || "Lender"
     });
     setIsModalOpen(true);
   };
@@ -183,42 +138,6 @@ export default function Profile() {
       ...prev,
       [id]: value
     }));
-  };
-
-  const handleArrayEdit = (key: keyof UserData, index: number, value: string) => {
-    setEdit(prev => {
-      const currentArray = prev[key] as string[] | undefined;
-      const updatedArray = currentArray ? [...currentArray] : [];
-      updatedArray[index] = value;
-      return {
-        ...prev,
-        [key]: updatedArray
-      };
-    });
-  };
-  
-  const handleAddArrayItem = (key: keyof UserData) => {
-    setEdit(prev => {
-      const currentArray = prev[key] as string[] | undefined;
-      return {
-        ...prev,
-        [key]: [...(currentArray || []), ""]
-      };
-    });
-  };
-  
-  const handleRemoveArrayItem = (key: keyof UserData, index: number) => {
-    setEdit(prev => {
-      const currentArray = prev[key] as string[] | undefined;
-      if (!currentArray) return prev;
-  
-      const updatedArray = [...currentArray];
-      updatedArray.splice(index, 1);
-      return {
-        ...prev,
-        [key]: updatedArray
-      };
-    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -279,48 +198,36 @@ export default function Profile() {
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    // const auth = getAuth(firebaseApp);
-    // const user = auth.currentUser;
-  
-    // if (!user) {
-    //   toast.error("No authenticated user found");
-    //   return;
-    // }
-  
+    const user = auth.currentUser;
+    
+    if (!user) {
+      toast.error("No authenticated user found");
+      return;
+    }
+
     try {
-      // const userDoc = doc(db, "users", user.uid);
-      // await updateDoc(userDoc, {
-      //   username: edit.username,
-      //   bio: edit.bio,
-      //   location: edit.location,
-      //   profilepic: edit.profilepic || userData?.profilepic,
-      //   failedExperience: edit.failedExperience,
-      //   misEducation: edit.misEducation,
-      //   failureHighlights: edit.failureHighlights,
-      //   age: edit.age,
-      //   gender: edit.gender,
-      //   address: edit.address,
-      //   completedLoans: edit.completedLoans,
-      //   role: edit.role
-      // });
-  
+      const userDoc = doc(db, "lender", user.uid);
+      await updateDoc(userDoc, {
+        username: edit.username,
+        location: edit.location,
+        profilepic: edit.profilepic || userData?.profilepic,
+        age: edit.age,
+        gender: edit.gender,
+        address: edit.address,
+      });
+
       setUserData(prev => ({
         ...prev!,
         username: edit.username,
         location: edit.location,
         profilepic: edit.profilepic || prev?.profilepic,
-        failedExperience: edit.failedExperience,
-        misEducation: edit.misEducation,
-        failureHighlights: edit.failureHighlights,
         age: edit.age,
         gender: edit.gender,
         address: edit.address,
-        completedLoans: edit.completedLoans,
-        role: edit.role
       }));
-  
+
       toast.success("Profile successfully updated!");
-      setIsModalOpen(false)
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
@@ -379,6 +286,12 @@ export default function Profile() {
                     <p className="text-lg font-bold">Gender: <span className="font-normal">{userData?.gender || "N/A"}</span></p>
                     <p className="text-lg font-bold">Address: <span className="font-normal">{userData?.address || "N/A"}</span></p>
                     <p className="text-lg font-bold">Completed Loans: <span className="font-normal">{userData?.completedLoans || 0}</span></p>
+                    <p className="text-lg font-bold">Active Loans: <span className="font-normal">{userData?.activeLoans || 0}</span></p>
+                    <p className="text-lg font-bold">Total Amount Lent: <span className="font-normal">₹{userData?.totalLent?.toLocaleString() || 0}</span></p>
+                    <p className="text-lg font-bold">Average Interest Rate: <span className="font-normal">{userData?.averageInterestRate || 0}%</span></p>
+                    <p className="text-lg font-bold">Account Balance: <span className="font-normal">₹{userData?.accountBalance?.toLocaleString() || 0}</span></p>
+                    <p className="text-lg font-bold">Verification Status: <span className="font-normal">{userData?.verificationStatus}</span></p>
+                    <p className="text-lg font-bold">Status: <span className="font-normal">{userData?.status || "Unverified"}</span></p>
                   </div>
                 </div>
               </div>
@@ -479,103 +392,6 @@ export default function Profile() {
 
         </div>
         </div>
-          <div>
-        <div className="mb-4">
-        <label htmlFor="failedExperience" className="block text-sm font-medium text-gray-700">
-          Failed Experience
-        </label>
-        {edit.failedExperience?.map((experience, index) => (
-          <div key={index} className="flex items-center gap-2 mb-2">
-            <input
-              type="text"
-              value={experience}
-              onChange={(e) => handleArrayEdit('failedExperience', index, e.target.value)}
-              className="mt-1 block w-full p-2 border border-border rounded-lg"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRemoveArrayItem('failedExperience', index)}
-            >
-              Remove
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => handleAddArrayItem('failedExperience')}
-        >
-          Add Experience
-        </Button>
-      </div>
-      
-      <div className="mb-4">
-        <label htmlFor="misEducation" className="block text-sm font-medium text-gray-700">
-          Mis-Education
-        </label>
-        {edit.misEducation?.map((education, index) => (
-          <div key={index} className="flex items-center gap-2 mb-2">
-            <input
-              type="text"
-              value={education}
-              onChange={(e) => handleArrayEdit('misEducation', index, e.target.value)}
-              className="mt-1 block w-full p-2 border border-border rounded-lg"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRemoveArrayItem('misEducation', index)}
-            >
-              Remove
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => handleAddArrayItem('misEducation')}
-        >
-          Add Education
-        </Button>
-      </div>
-      
-      <div className="mb-4">
-        <label htmlFor="failureHighlights" className="block text-sm font-medium text-gray-700">
-          Failure Highlights
-        </label>
-        {edit.failureHighlights?.map((highlight, index) => (
-          <div key={index} className="flex items-center gap-2 mb-2">
-            <input
-              type="text"
-              value={highlight}
-              onChange={(e) => handleArrayEdit('failureHighlights', index, e.target.value)}
-              className="mt-1 block w-full p-2 border border-border rounded-lg"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => handleRemoveArrayItem('failureHighlights', index)}
-            >
-              Remove
-            </Button>
-          </div>
-        ))}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => handleAddArrayItem('failureHighlights')}
-        >
-          Add Highlight
-        </Button>
-      </div>
-      </div>
         <div className="space-y-6">
           <div className="flex justify-end gap-2">
             <Button variant="outline" type="button" onClick={handleCloseModal}>
