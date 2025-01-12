@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { useState, useEffect } from "react"
 import { getDoc, getDocs, collection, addDoc, doc } from "firebase/firestore"
 import { db, auth } from "@/lib/firebase/config"
+import { motion } from "framer-motion"
+import { CheckCircle } from "lucide-react"
 
 // Mock data for loan requests
 const loanRequests = [
@@ -23,6 +25,9 @@ export default function BrowseRequests() {
   const [duration, setDuration] = useState("")
   const [loanRequests, setLoanRequests] = useState<any[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false)
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false)
+  const [showQRCode, setShowQRCode] = useState(false)
 
   useEffect(() => {
     const fetchLoanRequests = async () => {
@@ -78,6 +83,16 @@ export default function BrowseRequests() {
       console.error("Error submitting proposal:", error);
       alert("Failed to submit proposal. Please try again.");
     }
+  };
+
+  const handlePayment = () => {
+    setShowQRCode(true);
+    setIsPaymentProcessing(true);
+    setTimeout(() => {
+      setShowQRCode(false);
+      setIsPaymentProcessing(false);
+      setIsPaymentSuccessful(true);
+    }, 10000); // 10 seconds
   };
 
   return (
@@ -152,8 +167,44 @@ export default function BrowseRequests() {
                 className="bg-[#353369] border-white"
               />
             </div>
-            <Button onClick={handleSubmitOffer}>Submit Offer</Button>
+            <Button onClick={handlePayment}>Proceed to Payment</Button>
           </div>
+
+          {showQRCode && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center mt-4"
+            >
+              <img src="/assets/fake-qr-code.png" alt="Fake QR Code" className="w-32 h-32" />
+              <p className="ml-2">Scan the QR code to complete the payment</p>
+            </motion.div>
+          )}
+
+          {isPaymentProcessing && !showQRCode && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center mt-4"
+            >
+              <div className="loader"></div>
+              <p className="ml-2">Processing Payment...</p>
+            </motion.div>
+          )}
+
+          {isPaymentSuccessful && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center mt-4"
+            >
+              <CheckCircle className="h-6 w-6 text-green-500" />
+              <p className="ml-2">Payment Successful!</p>
+            </motion.div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

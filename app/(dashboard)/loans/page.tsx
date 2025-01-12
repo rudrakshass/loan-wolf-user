@@ -21,7 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { useToast } from "@/components/ui/use-toast"
+// import { useToast } from "@/components/ui/use-toast"
 
 // Mock data for demonstration
 const loanRequests = [
@@ -39,21 +39,21 @@ const loanOffers = [
 export default function LoansPage() {
   const [amount, setAmount] = useState(5000)
   const [sortBy, setSortBy] = useState("interest_rate")
-  const { toast } = useToast()
+  // const { toast } = useToast()
 
-  const handleLoanRequest = () => {
-    toast({
-      title: "Loan Request Submitted",
-      description: `Your loan request for $${amount} has been submitted successfully.`,
-    })
-  }
+  // // const handleLoanRequest = () => {
+  // //   toast({
+  // //     title: "Loan Request Submitted",
+  // //     description: `Your loan request for $${amount} has been submitted successfully.`,
+  // //   })
+  // }
 
-  const handleLendOffer = () => {
-    toast({
-      title: "Offer Submitted",
-      description: "Your lending offer has been submitted successfully.",
-    })
-  }
+  // const handleLendOffer = () => {
+  //   toast({
+  //     title: "Offer Submitted",
+  //     description: "Your lending offer has been submitted successfully.",
+  //   })
+  // }
 
   return (
     <div className="p-8">
