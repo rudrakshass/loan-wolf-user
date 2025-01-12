@@ -24,9 +24,6 @@ interface Proposal {
   requestId: string;
   status: string;
 }
-=======
-import { arrayUnion, doc, setDoc } from "firebase/firestore"
-
 
 export default function RequestLoan() {
   const [amount, setAmount] = useState<number>(500)
@@ -293,10 +290,6 @@ export default function RequestLoan() {
         )}
 
         <Card className="bg-[#605EA1] max-w-7xl">
-
-    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
-      <main className="flex-1 items-center p-8">
-        <Card> 
           <CardHeader>
             <CardTitle>Request a Loan</CardTitle>
             <CardDescription>
@@ -339,76 +332,76 @@ export default function RequestLoan() {
 
         <br />
         <Card className="max-w-7xl bg-[#605EA1]"> 
-        <CardHeader>
-          <CardTitle>Loan Offers Received</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {myProposals.map((proposal) => (
-              <Card key={proposal.requestId} className="p-4 bg-[#353369] border-gray-500">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
+          <CardHeader>
+            <CardTitle>Loan Offers Received</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {myProposals.map((proposal) => (
+                <Card key={proposal.requestId} className="p-4 bg-[#353369] border-gray-500">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        {proposal.status === "proposed" ? (
+                          <AlertCircle className="h-5 w-5 text-yellow-500" />
+                        ) : (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        )}
+                        <p className="font-medium text-lg">₹{proposal.amount.toLocaleString()}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">From: {proposal.lenderName}</p>
+                        <p className="text-sm text-muted-foreground">Interest Rate: {proposal.interestRate}%</p>
+                        <p className="text-sm text-muted-foreground">Duration: {proposal.duration} months</p>
+                        <p className="text-sm text-muted-foreground">EMI: ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}/month</p>
+                        <p className="text-xs text-muted-foreground">
+                          Received: {new Date(proposal.created_at).toLocaleDateString()}
+                        </p>
+                        {proposal.status === 'accepted' && (
+                          <>
+                            <p className="text-sm text-muted-foreground">
+                              Remaining Payments: {proposal.remaining_payments || proposal.duration}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Next Payment: {new Date(proposal.next_payment_date || calculateNextPaymentDate()).toLocaleDateString()}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
                       {proposal.status === "proposed" ? (
-                        <AlertCircle className="h-5 w-5 text-yellow-500" />
+                        <Button 
+                          variant="default"
+                          onClick={() => handleAcceptProposal(proposal)}
+                        >
+                          Accept Offer
+                        </Button>
+                      ) : proposal.status === "accepted" && proposal.remaining_payments > 0 ? (
+                        <Button 
+                          variant="default"
+                          onClick={() => handlePayment(proposal)}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          Pay EMI ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}
+                        </Button>
                       ) : (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      )}
-                      <p className="font-medium text-lg">₹{proposal.amount.toLocaleString()}</p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">From: {proposal.lenderName}</p>
-                      <p className="text-sm text-muted-foreground">Interest Rate: {proposal.interestRate}%</p>
-                      <p className="text-sm text-muted-foreground">Duration: {proposal.duration} months</p>
-                      <p className="text-sm text-muted-foreground">EMI: ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}/month</p>
-                      <p className="text-xs text-muted-foreground">
-                        Received: {new Date(proposal.created_at).toLocaleDateString()}
-                      </p>
-                      {proposal.status === 'accepted' && (
-                        <>
-                          <p className="text-sm text-muted-foreground">
-                            Remaining Payments: {proposal.remaining_payments || proposal.duration}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Next Payment: {new Date(proposal.next_payment_date || calculateNextPaymentDate()).toLocaleDateString()}
-                          </p>
-                        </>
+                        <span className="px-2 py-1 text-sm bg-green-500/20 text-green-500 rounded-full">
+                          Completed
+                        </span>
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    {proposal.status === "proposed" ? (
-                      <Button 
-                        variant="default"
-                        onClick={() => handleAcceptProposal(proposal)}
-                      >
-                        Accept Offer
-                      </Button>
-                    ) : proposal.status === "accepted" && proposal.remaining_payments > 0 ? (
-                      <Button 
-                        variant="default"
-                        onClick={() => handlePayment(proposal)}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        Pay EMI ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}
-                      </Button>
-                    ) : (
-                      <span className="px-2 py-1 text-sm bg-green-500/20 text-green-500 rounded-full">
-                        Completed
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Card>
-            ))}
-            {myProposals.length === 0 && (
-              <p className="text-center text-muted-foreground py-4">
-                No loan offers received yet
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                </Card>
+              ))}
+              {myProposals.length === 0 && (
+                <p className="text-center text-muted-foreground py-4">
+                  No loan offers received yet
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   )
