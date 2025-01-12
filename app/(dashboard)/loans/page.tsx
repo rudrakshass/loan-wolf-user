@@ -41,19 +41,21 @@ export default function LoansPage() {
   const [sortBy, setSortBy] = useState("interest_rate")
   // const { toast } = useToast()
 
-  // // const handleLoanRequest = () => {
-  // //   toast({
-  // //     title: "Loan Request Submitted",
-  // //     description: `Your loan request for $${amount} has been submitted successfully.`,
-  // //   })
-  // }
+  const handleLoanRequest = () => {
+    // toast({
+    //   title: "Loan Request Submitted",
+    //   description: `Your loan request for $${amount} has been submitted successfully.`,
+    // })
+    console.log(`Loan request for $${amount} has been submitted successfully.`);
+  }
 
-  // const handleLendOffer = () => {
-  //   toast({
-  //     title: "Offer Submitted",
-  //     description: "Your lending offer has been submitted successfully.",
-  //   })
-  // }
+  const handleLendOffer = () => {
+    // toast({
+    //   title: "Offer Submitted",
+    //   description: "Your lending offer has been submitted successfully.",
+    // })
+    console.log("Your lending offer has been submitted successfully.");
+  }
 
   return (
     <div className="p-8">
