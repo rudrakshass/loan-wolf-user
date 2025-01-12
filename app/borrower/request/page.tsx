@@ -320,6 +320,7 @@ export default function RequestLoan() {
                   placeholder="Briefly describe why you need this loan"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
+                  className="bg-[#353369]"
                 />
               </div>
 

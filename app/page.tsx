@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, DollarSign, Shield, Clock, ChevronRight } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import wolfimage from "@/components/assets/wolf.png";
 
 export default function Home() {
   const { user, userData } = useAuth();
@@ -96,6 +97,8 @@ export default function Home() {
           <nav className="border-b border-white/10">
             <div className="container mx-auto px-6 py-4">
               <div className="flex justify-between items-center">
+                
+            <img src={wolfimage.src} alt="Wolf Logo" className="h-12 w-12" />
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-purple-500 bg-clip-text text-transparent">
                   Loan<span className="text-primary">Wolf</span>
                 </h1>
@@ -156,20 +159,6 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative border-t border-white/10">
-          <div className="container mx-auto px-6 py-24">
-            <div className="grid md:grid-cols-3 gap-12">
-              <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg blur transition group-hover:opacity-100 group-hover:duration-200"></div>
-                <div className="relative bg-gray-900/50 backdrop-blur-sm p-8 rounded-lg border border-white/10">
-                  <DollarSign className="w-12 h-12 text-blue-400 mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Smart Rates</h3>
                 </div>
               </div>
             </div>

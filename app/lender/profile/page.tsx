@@ -18,7 +18,6 @@ interface UserData {
   username: string;
   email: string;
   location?: string;
-  bio?: string;
   profilepic?: string;
   failedExperience?: string[];
   misEducation?: string[];
@@ -44,7 +43,6 @@ export default function Profile() {
     username: "John Doe",
     email: "john.doe@example.com",
     location: "Unknown",
-    bio: "This is a dummy bio.",
     profilepic: "",
     failedExperience: ["Failed startup", "Lost job"],
     misEducation: ["Dropped out of college"],
@@ -119,7 +117,6 @@ export default function Profile() {
         username: "John Doe",
         email: "john.doe@example.com",
         location: "Unknown",
-        bio: "This is a dummy bio.",
         profilepic: "",
         failedExperience: ["Failed startup", "Lost job"],
         misEducation: ["Dropped out of college"],
@@ -163,7 +160,6 @@ export default function Profile() {
       username: userData?.username || "",
       email: userData?.email || "",
       location: userData?.location || "",
-      bio: userData?.bio || "",
       profilepic: userData?.profilepic || "",
       failedExperience: userData?.failedExperience || [],
       misEducation: userData?.misEducation || [],
@@ -311,7 +307,6 @@ export default function Profile() {
       setUserData(prev => ({
         ...prev!,
         username: edit.username,
-        bio: edit.bio,
         location: edit.location,
         profilepic: edit.profilepic || prev?.profilepic,
         failedExperience: edit.failedExperience,
@@ -343,6 +338,7 @@ export default function Profile() {
     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
 
   return (
+    <div className="min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
     <div className="container mt-0 px-4 py-8">
       <div className="max-w-xl bg-transparent mx-auto my-36 space-y-4">
         <motion.div
@@ -351,11 +347,14 @@ export default function Profile() {
           transition={{ duration: 0.3 }}
         >
             <div className="relative">
-          <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
-          <Card className="relative">
+          <Card className="relative rounded-xl">
             <div className="p-6">
+          <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
               <div className="flex justify-center">
-                <Avatar className="w-24 h-24 border-4 border-background -mt-12">
+              <motion.div className="w-40 h-40 -mt-12"
+              whileHover={{ scale: 2.5 }}
+              >
+                <Avatar className="w-full h-full border-4 border-background">
                   <AvatarImage 
                     src={avatarSrc} 
                     alt={`${userData?.username || 'User'}'s avatar`} 
@@ -364,6 +363,7 @@ export default function Profile() {
                   />
                   <AvatarFallback>{userData?.username?.[0] || 'U'}</AvatarFallback>
                 </Avatar>
+              </motion.div>
               </div>
               <div className="mt-5 text-center">
                 <h1 className="text-2xl font-bold">{userData?.username || "User"}</h1>
@@ -391,9 +391,6 @@ export default function Profile() {
                   <LogOut className="h-4 w-4 mr-2" />
                   Logout
                 </Button>
-              </div>
-              <div className="mt-6 text-center">
-                <p className="text-sm text-muted-foreground">{userData?.bio || "No bio available"}</p>
               </div>
             </div>
           </Card> 
@@ -445,18 +442,6 @@ export default function Profile() {
               onChange={handleEditChange}
             />
           </div>
-        </div>
-        <div className="mb-4">
-          <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
-            Bio
-          </label>
-          <textarea
-            id="bio"
-            rows={4}
-            className="block w-full p-2 border border-border rounded-lg no-scrollbar"
-            value={edit.bio}
-            onChange={handleEditChange}
-          />
         </div>
 
 
@@ -605,6 +590,7 @@ export default function Profile() {
 )}
         </AnimatePresence>
       </div>
+    </div>
     </div>
   );
 }
