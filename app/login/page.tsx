@@ -50,15 +50,22 @@ export default function Login() {
 
   if (!selectedRole) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className='relative'
-          >
-            <div className="space-y-4 text-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+        className='relative'
+        >
+        
+    <div className="min-h-screen flex my-10 items-center justify-center">
+      <div className="relative w-full max-w-xl p-8 space-y-6 bg-card rounded-lg shadow-lg border">
+        <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
+        <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: .3 }}
+        className="relative"
+      >
               <h1 className="text-3xl font-bold">Welcome to LoanWolf</h1>
               <p className="text-muted-foreground">How would you like to login?</p>
               
@@ -81,16 +88,24 @@ export default function Login() {
                   </Button>
                 </motion.div>
               </div>
+      </motion.div>
             </div>
-          </motion.div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
+      <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
     <div className="min-h-screen flex my-10 items-center justify-center">
       <div className="w-full max-w-md p-8 space-y-6 bg-card rounded-lg shadow-lg border">
+        <div className='relative'>
+        <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
+        
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -186,6 +201,8 @@ export default function Login() {
           </p>
         </motion.div>
       </div>
+      </div>
     </div>
+      </motion.div>
   );
 }

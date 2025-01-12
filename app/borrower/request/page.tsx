@@ -24,9 +24,12 @@ interface Proposal {
   requestId: string;
   status: string;
 }
+=======
+import { arrayUnion, doc, setDoc } from "firebase/firestore"
+
 
 export default function RequestLoan() {
-  const [amount, setAmount] = useState<number>(1000)
+  const [amount, setAmount] = useState<number>(500)
   const [purpose, setPurpose] = useState("")
   const [borrowerName, setBorrowerName] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -290,6 +293,10 @@ export default function RequestLoan() {
         )}
 
         <Card className="bg-[#605EA1] max-w-7xl">
+
+    <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+      <main className="flex-1 items-center p-8">
+        <Card> 
           <CardHeader>
             <CardTitle>Request a Loan</CardTitle>
             <CardDescription>
@@ -297,7 +304,7 @@ export default function RequestLoan() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4 ">
+            <form onSubmit={handleSubmit} className="space-y-6 ">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Loan Amount: ₹{amount}</label>
                 <Slider
@@ -306,6 +313,7 @@ export default function RequestLoan() {
                   max={10000}
                   min={1000}
                   step={100}
+                  className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>₹1,000</span>
@@ -319,7 +327,6 @@ export default function RequestLoan() {
                   placeholder="Briefly describe why you need this loan"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  className="bg-[#353369]"
                 />
               </div>
 
@@ -329,6 +336,7 @@ export default function RequestLoan() {
             </form>
           </CardContent>
         </Card>
+
         <br />
         <Card className="max-w-7xl bg-[#605EA1]"> 
         <CardHeader>
