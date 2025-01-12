@@ -9,6 +9,7 @@ import { motion } from "framer-motion"
 import wolfimage from "@/components/assets/wolf.png";
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
+import { useAuth } from '@/context/AuthContext';
 
 const defaultRoutes = [
   {
@@ -20,6 +21,7 @@ const defaultRoutes = [
 ];
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
+  const { user, userData } = useAuth();
   const pathname = usePathname()
   const router = useRouter()
 
@@ -45,23 +47,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         </Link>
         <div className="space-y-1">
           {children}
-          <motion.div
-            whileHover={{ scale: 1.15 }}
-            whileTap={{ scale: 0.95 }}
-            layout
-          >
-            <Link
-              href="/profile"
-              className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
-                pathname === "/profile" ? "text-white bg-white/10" : "text-zinc-400",
-              )}>
-              <div className="flex items-center flex-1">
-                <Users className="h-5 w-5 mr-3 text-pink-700" />
-                Profile
-              </div>
-            </Link>
-          </motion.div>
+          
         </div>
       </div>
       <div className="px-3 py-2">

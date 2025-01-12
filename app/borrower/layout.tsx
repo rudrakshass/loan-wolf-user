@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Sidebar } from '@/components/sidebar';
-import { DollarSign, History, Settings, LayoutDashboardIcon, PhoneCallIcon, Phone } from "lucide-react";
+import { DollarSign, History, Settings, LayoutDashboardIcon, PhoneCallIcon, Phone, User} from "lucide-react";
 import { usePathname } from 'next/navigation';
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -98,6 +98,23 @@ export default function RootLayout({
                   </div>
                 </Link>
               </motion.div>
+              <motion.div
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.95 }}
+            layout
+          >
+            <Link
+              href="/borrower/profile"
+              className={cn(
+                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-white hover:bg-white/10 rounded-lg transition",
+                pathname === "/borrower/profile" ? "text-white bg-white/10" : "text-zinc-400",
+              )}>
+              <div className="flex items-center flex-1">
+                <User className="h-5 w-5 mr-3 text-pink-700" />
+                Profile
+              </div>
+            </Link>
+          </motion.div>
             </Sidebar>
             <div className="flex-1 overflow-y-auto bg-background">
               {children}
