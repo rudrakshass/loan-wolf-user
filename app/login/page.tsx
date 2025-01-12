@@ -11,6 +11,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -31,6 +32,11 @@ export default function Login() {
         const userData = userDoc.data();
         
         if (userData) {
+          // Store auth token in local storage as well
+          const token = await user.getIdToken();
+          localStorage.setItem('auth-token', token);
+          Cookies.set('auth-token', token, { expires: 7 });
+          
           router.push(`/${selectedRole}`);
         } else {
           setError('User not found in selected role');

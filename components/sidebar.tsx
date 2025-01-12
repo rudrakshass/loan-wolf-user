@@ -9,6 +9,7 @@ import { motion } from "framer-motion"
 import wolfimage from "@/components/assets/wolf.png";
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
+import { useAuth } from '@/context/AuthContext';
 
 const defaultRoutes = [
   {
@@ -20,6 +21,7 @@ const defaultRoutes = [
 ];
 
 export function Sidebar({ children }: { children: React.ReactNode }) {
+  const { user, userData } = useAuth();
   const pathname = usePathname()
   const router = useRouter()
 
