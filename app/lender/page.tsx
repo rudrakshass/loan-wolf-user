@@ -252,7 +252,7 @@ export default function BrowseRequests() {
               <CardDescription>Overview of your lending portfolio</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Active Loans</p>
                   <p className="text-2xl font-bold">{acceptedLoans.length}</p>
@@ -274,13 +274,13 @@ export default function BrowseRequests() {
                   <p className="text-2xl font-bold">
                     {(acceptedLoans.reduce((sum, loan) => sum + loan.interestRate, 0) / acceptedLoans.length).toFixed(1)}%
                   </p>
-                  <Button
-                    onClick={() => setIsPaymentDialogOpen(true)}
-                    className="w-30 absolute mt-0 top-60"
-                  >
-                    Make a Payment
-                  </Button>
                 </div>
+                <Button
+                  onClick={() => setIsPaymentDialogOpen(true)}
+                  className="-mt-20 absolute top-4 right-4"
+                >
+                  Make a Payment
+                </Button>
               </div>
             </CardContent>
           </Card>

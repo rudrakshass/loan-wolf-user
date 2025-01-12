@@ -20,7 +20,6 @@ export function ActivityChart() {
         <LineChart data={data}>
           <XAxis dataKey="date" stroke="#888888" fontSize={12} />
           <YAxis stroke="#888888" fontSize={12} />
-          <Tooltip />
           <Line
             type="monotone"
             dataKey="value"
