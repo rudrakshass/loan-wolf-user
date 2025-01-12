@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pencil, MapPin, LogOut } from "lucide-react";
-// import { doc, getDoc, collection, query, getDocs, updateDoc } from "firebase/firestore";
-// import { getAuth, signOut } from "firebase/auth";
-// import { useRouter } from "next/navigation";
-// import { firebaseApp, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { db } from "@/lib/firebase/config";
+import { useRouter } from "next/navigation";
 import { HashLoader } from "react-spinners";
 import { toast } from "react-toastify";
 
@@ -61,84 +61,63 @@ export default function Profile() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  // const router = useRouter();
+  const router = useRouter();
+  
   const fetchUserData = useCallback(async () => {
-    // const auth = getAuth(firebaseApp);
-    // const user = auth.currentUser;
-    
-    // if (!user) {
-    //   router.push("/login");
-    //   return;
-    // }
-
     try {
-      // const userDoc = doc(db, "users", user.uid);
-      // const docSnap = await getDoc(userDoc);
-    
-      // if (docSnap.exists()) {
-      //   const fetchedUserData = docSnap.data() as UserData;
-      //   setUserData(fetchedUserData);
-        
-      //   setEdit({
-      //     username: fetchedUserData.username || "",
-      //     email: fetchedUserData.email || "",
-      //     location: fetchedUserData.location || "",
-      //     bio: fetchedUserData.bio || "",
-      //     profilepic: fetchedUserData.profilepic || "",
-      //     failedExperience: fetchedUserData.failedExperience || [],
-      //     misEducation: fetchedUserData.misEducation || [],
-      //     failureHighlights: fetchedUserData.failureHighlights || [],
-      //     age: fetchedUserData.age,
-      //     gender: fetchedUserData.gender,
-      //     address: fetchedUserData.address,
-      //     completedLoans: fetchedUserData.completedLoans,
-      //     role: fetchedUserData.role || "Lender" // Default role
-      //   });
-      // } else {
-      //   console.error("No user document found!");
-      //   setUserData(null);
-      // }
-    
-      // const postsCollection = collection(db, "posts"); 
-      // const postsQuery = query(postsCollection); 
-    
-      // const querySnapshot = await getDocs(postsQuery); 
-      // const fetchedPosts: Post[] = querySnapshot.docs
-      //   .map((doc) => ({
-      //     id: doc.id,
-      //     ...(doc.data() as Omit<Post, "id">), 
-      //   }))
-      //   .filter((post) => post.userId === user.uid); 
-    
-      // setPosts(fetchedPosts); 
-
-      // Dummy data
-      setUserData({
-        username: "John Doe",
-        email: "john.doe@example.com",
-        location: "Unknown",
-        profilepic: "",
-        failedExperience: ["Failed startup", "Lost job"],
-        misEducation: ["Dropped out of college"],
-        failureHighlights: ["Bankruptcy", "Divorce"],
-        age: 30,
-        gender: "Male",
-        address: "123 Main St, Anytown, USA",
-        completedLoans: 5,
-        role: "Lender" // Default role
+      setLoading(true);
+      const auth = getAuth();
+      
+      // Wait for auth to initialize
+      await new Promise((resolve) => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+          unsubscribe();
+          resolve(user);
+        });
       });
-      setPosts([
-        { id: "1", title: "Dummy Post 1", content: "This is a dummy post.", userId: "1" },
-        { id: "2", title: "Dummy Post 2", content: "This is another dummy post.", userId: "1" }
-      ]);
+
+      const user = auth.currentUser;
+      
+      if (!user) {
+        console.log("No user found, redirecting to login");
+        router.push("/login");
+        return;
+      }
+
+      const userDoc = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userDoc);
+    
+      if (docSnap.exists()) {
+        const fetchedUserData = docSnap.data() as UserData;
+        setUserData(fetchedUserData);
+        setEdit({
+          username: fetchedUserData.username || "",
+          email: fetchedUserData.email || "",
+          location: fetchedUserData.location || "",
+          profilepic: fetchedUserData.profilepic || "https://postimg.cc/KkWNjxsq",
+          failedExperience: fetchedUserData.failedExperience || [],
+          misEducation: fetchedUserData.misEducation || [],
+          failureHighlights: fetchedUserData.failureHighlights || [],
+          age: fetchedUserData.age || 0,
+          gender: fetchedUserData.gender || "",
+          address: fetchedUserData.address || "",
+          completedLoans: fetchedUserData.completedLoans || 0,
+          role: fetchedUserData.role || "borrower"
+        });
+      } else {
+        console.error("No user document found!");
+        toast.error("User data not found");
+        router.push("/login");
+      }
     } catch (error) {
-      console.error("Error fetching user data or posts:", error);
+      console.error("Error fetching user data:", error);
       toast.error("Failed to fetch user data");
+      router.push("/login");
     } finally {
       setLoading(false);
     }
-}, []); // Removed router dependency
-    
+  }, [router]);
+
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
@@ -279,59 +258,49 @@ export default function Profile() {
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    // const auth = getAuth(firebaseApp);
-    // const user = auth.currentUser;
+    const auth = getAuth();
+    const user = auth.currentUser;
   
-    // if (!user) {
-    //   toast.error("No authenticated user found");
-    //   return;
-    // }
+    if (!user) {
+      toast.error("No authenticated user found");
+      return;
+    }
   
     try {
-      // const userDoc = doc(db, "users", user.uid);
-      // await updateDoc(userDoc, {
-      //   username: edit.username,
-      //   bio: edit.bio,
-      //   location: edit.location,
-      //   profilepic: edit.profilepic || userData?.profilepic,
-      //   failedExperience: edit.failedExperience,
-      //   misEducation: edit.misEducation,
-      //   failureHighlights: edit.failureHighlights,
-      //   age: edit.age,
-      //   gender: edit.gender,
-      //   address: edit.address,
-      //   completedLoans: edit.completedLoans,
-      //   role: edit.role
-      // });
+      const userDoc = doc(db, "users", user.uid);
+      await setDoc(userDoc, {
+        ...edit,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
   
       setUserData(prev => ({
         ...prev!,
-        username: edit.username,
-        location: edit.location,
-        profilepic: edit.profilepic || prev?.profilepic,
-        failedExperience: edit.failedExperience,
-        misEducation: edit.misEducation,
-        failureHighlights: edit.failureHighlights,
-        age: edit.age,
-        gender: edit.gender,
-        address: edit.address,
-        completedLoans: edit.completedLoans,
-        role: edit.role
+        ...edit
       }));
   
       toast.success("Profile successfully updated!");
-      setIsModalOpen(false)
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile");
     }
   };
 
-  if (loading) return (
-    <div className="flex h-screen items-center justify-center">
-      <HashLoader color="white"/>
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+        <HashLoader color="white" />
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+        <div className="text-white">Loading user data...</div>
+      </div>
+    );
+  }
 
   // Default avatar if not provided
   const avatarSrc = userData?.profilepic || 
@@ -594,3 +563,4 @@ export default function Profile() {
     </div>
   );
 }
+``` 
