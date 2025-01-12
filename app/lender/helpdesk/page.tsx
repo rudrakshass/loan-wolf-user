@@ -7,14 +7,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
   Search,
-  MailQuestion,
-  MessageCircle,
-  Clock,
-  CheckCircle,
   AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
-import { addDoc, collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { addDoc, collection, getDocs, orderBy, query, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
+
+interface Ticket {
+  id: string;
+  subject: string;
+  description: string;
+  status: string;
+  createdAt: {
+    seconds: number;
+  };
+}
 
 const faqItems = [
   {
@@ -38,7 +45,7 @@ const HelpDesk = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
 
   useEffect(() => {
@@ -47,7 +54,7 @@ const HelpDesk = () => {
         const ticketCollection = collection(db, "helpdesk_lender");
         const q = query(ticketCollection, orderBy("createdAt", "desc"));
         const querySnapshot = await getDocs(q);
-        const fetchedTickets = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+        const fetchedTickets = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Ticket[];
         setTickets(fetchedTickets);
       } catch (error) {
         console.error("Error fetching tickets:", error);
@@ -61,7 +68,7 @@ const HelpDesk = () => {
   }, []);
 
   // Handle ticket submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSuccessMessage("");
@@ -86,7 +93,7 @@ const HelpDesk = () => {
           const ticketCollection = collection(db, "helpdesk_lender");
           const q = query(ticketCollection, orderBy("createdAt", "desc"));
           const querySnapshot = await getDocs(q);
-          const fetchedTickets = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+          const fetchedTickets = querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Ticket[];
           setTickets(fetchedTickets);
         } catch (error) {
           console.error("Error fetching tickets:", error);

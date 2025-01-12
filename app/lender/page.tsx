@@ -11,20 +11,19 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   DollarSign,
-  Clock,
   Smile,
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { useState,useEffect } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import ProtectedRoute from '@/components/protected-route'
 import { motion } from 'framer-motion';
-import qrCodeImage from '@/components/assets/qrcode.jpg';
+
 interface Proposal {
   id: string;
   amount: number;
@@ -39,14 +38,19 @@ interface Proposal {
   last_payment_date?: string;
 }
 
+interface LoanRequest {
+  id: string;
+  [key: string]: any;
+}
+
 export default function BrowseRequests() {
-  const [selectedRequest, setSelectedRequest] = useState<any>(null)
-  const [interestRate, setInterestRate] = useState("")
-  const [duration, setDuration] = useState("")
-  const [username, setUsername] = useState("") // Changed to include setUsername
+  const [selectedRequest, setSelectedRequest] = useState<LoanRequest | null>(null);
+  const [interestRate, setInterestRate] = useState("");
+  const [duration, setDuration] = useState("");
+  const [username, setUsername] = useState(""); // Changed to include setUsername
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [proposalDetails, setProposalDetails] = useState<any>(null);
-  const [loanRequests, setLoanRequests] = useState<any[]>([]);
+  const [proposalDetails, setProposalDetails] = useState<LoanRequest | null>(null);
+  const [loanRequests, setLoanRequests] = useState<LoanRequest[]>([]);
   const [pendingProposals, setPendingProposals] = useState<Proposal[]>([]);
   const [acceptedLoans, setAcceptedLoans] = useState<Proposal[]>([]);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
@@ -70,12 +74,6 @@ export default function BrowseRequests() {
 
     return () => unsubscribe();
   }, []);
-
-  interface LoanRequest {
-    id: string;
-    created_at: string;
-    [key: string]: any;
-  }
 
   useEffect(() => {
     const fetchLoanRequests = async () => {
@@ -158,7 +156,7 @@ export default function BrowseRequests() {
     fetchAcceptedLoans();
   }, []);
 
-  const handleAcceptRequest = async (request: any) => {
+  const handleAcceptRequest = async (request: LoanRequest) => {
     setProposalDetails(request);
     setIsDialogOpen(true);
   };
@@ -177,15 +175,15 @@ export default function BrowseRequests() {
       const proposalData = {
         lenderId,
         lenderName,
-        borrowerId: proposalDetails.borrowerId,
-        borrowerName: proposalDetails.borrowerName,
-        amount: proposalDetails.amount,
-        purpose: proposalDetails.purpose,
+        borrowerId: proposalDetails?.borrowerId,
+        borrowerName: proposalDetails?.borrowerName,
+        amount: proposalDetails?.amount,
+        purpose: proposalDetails?.purpose,
         interestRate: Number(interestRate),
         duration: Number(duration),
         status: "proposed",
         created_at: new Date().toISOString(),
-        requestId: proposalDetails.id
+        requestId: proposalDetails?.id
       };
 
       await addDoc(collection(db, 'proposals'), proposalData);
