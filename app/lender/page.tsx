@@ -23,7 +23,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import ProtectedRoute from '@/components/protected-route'
-
+import { motion } from 'framer-motion';
+import qrCodeImage from '@/components/assets/qrcode.jpg';
 interface Proposal {
   id: string;
   amount: number;
@@ -48,6 +49,10 @@ export default function BrowseRequests() {
   const [loanRequests, setLoanRequests] = useState<any[]>([]);
   const [pendingProposals, setPendingProposals] = useState<Proposal[]>([]);
   const [acceptedLoans, setAcceptedLoans] = useState<Proposal[]>([]);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+  const [isPaymentSuccessful, setIsPaymentSuccessful] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -210,6 +215,25 @@ export default function BrowseRequests() {
     return totalAmount - paidAmount;
   };
 
+  const handlePayment = () => {
+    setShowQRCode(true);
+    setIsPaymentProcessing(true);
+    setTimeout(() => {
+      setShowQRCode(false);
+      setIsPaymentProcessing(false);
+      setIsPaymentSuccessful(true);
+    }, 15000); // 15 seconds
+  };
+
+  const handlePaymentDialogOpenChange = (isOpen: boolean) => {
+    setIsPaymentDialogOpen(isOpen);
+    if (!isOpen) {
+      setShowQRCode(false);
+      setIsPaymentProcessing(false);
+      setIsPaymentSuccessful(false);
+    }
+  };
+
   return (
     <ProtectedRoute>
       <div className="p-8 space-y-8 h-vh bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
@@ -252,6 +276,12 @@ export default function BrowseRequests() {
                   <p className="text-2xl font-bold">
                     {(acceptedLoans.reduce((sum, loan) => sum + loan.interestRate, 0) / acceptedLoans.length).toFixed(1)}%
                   </p>
+                  <Button
+                    onClick={() => setIsPaymentDialogOpen(true)}
+                    className="w-30 absolute mt-0 top-60"
+                  >
+                    Make a Payment
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -509,6 +539,52 @@ export default function BrowseRequests() {
               Submit Proposal
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isPaymentDialogOpen} onOpenChange={handlePaymentDialogOpenChange}>
+        <DialogContent className="bg-[#605EA1]">
+          <DialogHeader>
+            <DialogTitle>Payment Processing</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <Button onClick={handlePayment}>Proceed to Payment</Button>
+          </div>
+
+          {showQRCode && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center mt-4"
+            >
+              <img src="https://media.istockphoto.com/id/1347277582/vector/qr-code-sample-for-smartphone-scanning-on-white-background.jpg?s=2048x2048&w=is&k=20&c=dJraErXxUlsrT87lmNi-8mN9y-1ya1RPR3IoTLFcuzw=" alt="Fake QR Code" className="w-32 h-32" />
+              <p className="ml-2">Scan the QR code to complete the payment</p>
+            </motion.div>
+          )}
+
+          {isPaymentProcessing && !showQRCode && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center mt-4"
+            >
+              <div className="loader"></div>
+              <p className="ml-2">Processing Payment...</p>
+            </motion.div>
+          )}
+
+          {isPaymentSuccessful && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center items-center mt-4"
+            >
+              <CheckCircle className="h-6 w-6 text-green-500" />
+              <p className="ml-2">Payment Successful!</p>
+            </motion.div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -352,7 +352,7 @@ export default function Profile() {
           <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-3xl rounded-lg"></div>
               <div className="flex justify-center">
               <motion.div className="w-40 h-40 -mt-12"
-              whileHover={{ scale: 2.5 }}
+              whileHover={{ scale: 1.5 }}
               >
                 <Avatar className="w-full h-full border-4 border-background">
                   <AvatarImage 
