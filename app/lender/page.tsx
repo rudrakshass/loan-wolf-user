@@ -247,40 +247,42 @@ export default function BrowseRequests() {
         {/* Add this new section at the top */}
         {acceptedLoans.length > 0 && (
           <Card className="bg-[#605EA1] border-gray-500">
-            <CardHeader>
-              <CardTitle>Active Loans Summary</CardTitle>
-              <CardDescription>Overview of your lending portfolio</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+          <CardTitle>Active Loans Summary</CardTitle>
+          <CardDescription>Overview of your lending portfolio</CardDescription>
+              </div>
+              <Button
+          onClick={() => setIsPaymentDialogOpen(true)}
+          className="bg-green-600 hover:bg-green-700"
+              >
+          Make a Payment
+              </Button>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Active Loans</p>
-                  <p className="text-2xl font-bold">{acceptedLoans.length}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Amount Lent</p>
-                  <p className="text-2xl font-bold">
-                    ₹{acceptedLoans.reduce((sum, loan) => sum + loan.amount, 0).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Expected Returns</p>
-                  <p className="text-2xl font-bold text-green-500">
-                    ₹{calculateTotalReturn(acceptedLoans).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Average Interest Rate</p>
-                  <p className="text-2xl font-bold">
-                    {(acceptedLoans.reduce((sum, loan) => sum + loan.interestRate, 0) / acceptedLoans.length).toFixed(1)}%
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setIsPaymentDialogOpen(true)}
-                  className="-mt-20 absolute top-4 right-4"
-                >
-                  Make a Payment
-                </Button>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Total Active Loans</p>
+            <p className="text-2xl font-bold">{acceptedLoans.length}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Total Amount Lent</p>
+            <p className="text-2xl font-bold">
+              ₹{acceptedLoans.reduce((sum, loan) => sum + loan.amount, 0).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Expected Returns</p>
+            <p className="text-2xl font-bold text-green-500">
+              ₹{calculateTotalReturn(acceptedLoans).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Average Interest Rate</p>
+            <p className="text-2xl font-bold">
+              {(acceptedLoans.reduce((sum, loan) => sum + loan.interestRate, 0) / acceptedLoans.length).toFixed(1)}%
+            </p>
+          </div>
               </div>
             </CardContent>
           </Card>
