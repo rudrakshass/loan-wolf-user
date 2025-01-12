@@ -12,7 +12,7 @@ import {
   Clock,
   Smile,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useState, useEffect } from "react"
 import { auth, db } from '@/lib/firebase/config';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
@@ -25,12 +25,24 @@ const loanRequests = [
   { id: 3, borrower: "Mike R.", amount: 3000, purpose: "Education" },
 ]
 
+interface Loan {
+  id: string;
+  amount: number;
+  interestRate: number;
+  duration: number;
+  remaining_payments?: number;
+  next_payment_date?: string;
+  total_paid?: number;
+  status: string;
+}
+
 export default function BorrowerDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
   const [interestRate, setInterestRate] = useState("")
   const [duration, setDuration] = useState("")
   const [username, setUsername] = useState("") // Add this line
   const [myRequests, setMyRequests] = useState<any[]>([]);
+  const [activeLoans, setActiveLoans] = useState<Loan[]>([]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -74,6 +86,56 @@ export default function BorrowerDashboard() {
     fetchMyRequests();
   }, []);
 
+  // Add this new useEffect to fetch active loans
+  useEffect(() => {
+    const fetchActiveLoans = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const q = query(
+          collection(db, 'proposals'),
+          where('borrowerId', '==', user.uid),
+          where('status', 'in', ['accepted', 'active'])
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const loans = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Loan[];
+
+        setActiveLoans(loans);
+      } catch (error) {
+        console.error("Error fetching active loans:", error);
+      }
+    };
+
+    fetchActiveLoans();
+  }, []);
+
+  const calculateNextPayment = (loan: Loan) => {
+    const monthlyRate = (loan.interestRate / 12) / 100;
+    const emi = (loan.amount * monthlyRate * Math.pow(1 + monthlyRate, loan.duration)) / 
+                (Math.pow(1 + monthlyRate, loan.duration) - 1);
+    return emi;
+  };
+
+  const calculateTotalDue = () => {
+    return activeLoans.reduce((total, loan) => {
+      const emi = calculateNextPayment(loan);
+      return total + (emi * (loan.remaining_payments || loan.duration));
+    }, 0);
+  };
+
+  const getNextPaymentDate = () => {
+    const nextDates = activeLoans
+      .map(loan => loan.next_payment_date)
+      .filter(date => date)
+      .sort();
+    return nextDates[0] ? new Date(nextDates[0]).toLocaleDateString() : 'No upcoming payments';
+  };
+
   const handleSubmitOffer = () => {
     console.log({
       requestId: selectedRequest?.id,
@@ -91,9 +153,44 @@ export default function BorrowerDashboard() {
           <p className="text-gray-400 mt-1">Welcome back to your borrowing dashboard</p>
         </div>
 
+        {/* Add Payment Summary Section */}
+       
+
         <div className="flex justify-between items-center">
           <h2 className="text-5xl font-bold tracking-tight">Borrower Dashboard</h2>
         </div>
+         {activeLoans.length > 0 && (
+          <Card className="bg-[#605EA1] border-gray-500">
+            <CardHeader>
+              <CardTitle>Payment Summary</CardTitle>
+              <CardDescription>Overview of your loan payments</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Loans</p>
+                  <p className="text-2xl font-bold">{activeLoans.length}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Next Payment Date</p>
+                  <p className="text-2xl font-bold">{getNextPaymentDate()}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Next EMI Due</p>
+                  <p className="text-2xl font-bold text-yellow-500">
+                    ₹{activeLoans.reduce((total, loan) => total + calculateNextPayment(loan), 0).toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Outstanding</p>
+                  <p className="text-2xl font-bold text-red-500">
+                    ₹{calculateTotalDue().toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card className="p-6 bg-[#605EA1] border-gray-500">
