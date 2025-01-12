@@ -102,54 +102,16 @@ const HelpDesk = () => {
         <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
         <Input
           placeholder="Search for help articles..."
-          className="pl-10 h-12"
+          className="pl-10 h-12 bg-[#353369]"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <MailQuestion className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold">Submit a Ticket</h3>
-              <p className="text-sm text-muted-foreground">Get help from our support team</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <MessageCircle className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold">Live Chat</h3>
-              <p className="text-sm text-muted-foreground">Chat with support agent</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 hover:bg-accent/50 cursor-pointer transition-colors">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <Clock className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <h3 className="font-semibold">View Tickets</h3>
-              <p className="text-sm text-muted-foreground">Check your ticket status</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      {/* FAQ Section and Support Ticket Form */}
+            {/* FAQ Section and Support Ticket Form */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="bg-[#605ea1]">
           <CardHeader>
             <CardTitle>Frequently Asked Questions</CardTitle>
           </CardHeader>
@@ -163,7 +125,7 @@ const HelpDesk = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-[#605ea1]">
           <CardHeader>
             <CardTitle>Submit a Support Ticket</CardTitle>
           </CardHeader>
@@ -200,7 +162,7 @@ const HelpDesk = () => {
       </div>
 
       {/* Recent Tickets */}
-      <Card>
+      <Card className="bg-[#605ea1]">
         <CardHeader>
           <CardTitle>Your Recent Tickets</CardTitle>
         </CardHeader>

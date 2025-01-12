@@ -212,7 +212,7 @@ export default function BrowseRequests() {
 
   return (
     <ProtectedRoute>
-      <div className="p-8 space-y-8 h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+      <div className="p-8 space-y-8 h-vh bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
         <div className="mb-8">
           <h1 className="text-3xl font-semibold text-gray-200">Hello, {username}! 👋</h1>
           <p className="text-gray-400 mt-1">Welcome back to your lending dashboard</p>
