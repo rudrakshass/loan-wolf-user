@@ -10,6 +10,11 @@ import wolfimage from "@/components/assets/wolf.png";
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
 import { useAuth } from '@/context/AuthContext';
+import { ReactNode } from "react"
+
+interface SidebarProps {
+  children?: ReactNode; // Make children optional
+}
 
 const defaultRoutes = [
   {
@@ -20,7 +25,7 @@ const defaultRoutes = [
   },
 ];
 
-export function Sidebar({ children }: { children: React.ReactNode }) {
+export function Sidebar({ children }: SidebarProps) {
   const { user, userData } = useAuth();
   const pathname = usePathname()
   const router = useRouter()
