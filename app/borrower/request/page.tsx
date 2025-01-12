@@ -9,6 +9,7 @@ import { useState, useEffect } from "react"
 import { auth, db } from "@/lib/firebase/config"
 import { arrayUnion, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, doc as firestoreDoc, addDoc, increment } from "firebase/firestore"
 import { AlertCircle, CheckCircle } from "lucide-react"
+import { HashLoader } from "react-spinners";
 
 interface Proposal {
   id: string;
@@ -32,6 +33,26 @@ export default function RequestLoan() {
   const [isLoading, setIsLoading] = useState(false)
   const [myProposals, setMyProposals] = useState<Proposal[]>([]);
   const [acceptedLoans, setAcceptedLoans] = useState<Proposal[]>([]);
+  const [borrowerStatus, setBorrowerStatus] = useState<string>("");
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  useEffect(() => {
+    const checkBorrowerStatus = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const userDoc = await getDoc(doc(db, 'borrower', user.uid));
+          const userData = userDoc.data();
+          setBorrowerStatus(userData?.status || "unverified");
+        } catch (error) {
+          console.error("Error fetching borrower status:", error);
+        } finally {
+          setCheckingStatus(false);
+        }
+      }
+    };
+    checkBorrowerStatus();
+  }, []);
 
   useEffect(() => {
     const fetchBorrowerName = async () => {
@@ -112,6 +133,12 @@ export default function RequestLoan() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (borrowerStatus !== "verified") {
+      alert("Your account needs to be verified before making loan requests.");
+      return;
+    }
+    
     setIsLoading(true);
   
     try {
@@ -247,162 +274,185 @@ export default function RequestLoan() {
     }, 0);
   };
 
+  if (checkingStatus) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900">
+        <HashLoader color="white" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gradient-to-r from-[#181127] via-purple-700 to-purple-900 px-14">
       <main className="flex-1 items-center py-8">
         <h2 className="text-5xl font-bold tracking-tight">Requests</h2>
         <br />
         
-        {/* Add this new section at the top */}
-        {acceptedLoans.length > 0 && (
+        {borrowerStatus !== "verified" ? (
           <Card className="bg-[#605EA1] max-w-7xl mb-6">
             <CardHeader>
-              <CardTitle>Loan Summary</CardTitle>
-              <CardDescription>Overview of your accepted loans</CardDescription>
+              <CardTitle className="text-yellow-400">Account Verification Required</CardTitle>
+              <CardDescription>
+                Your account needs to be verified before you can request loans. Please wait for admin verification or contact support.
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Active Loans</p>
-                  <p className="text-2xl font-bold">{acceptedLoans.length}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Principal</p>
-                  <p className="text-2xl font-bold">
-                    ₹{acceptedLoans.reduce((sum, loan) => sum + loan.amount, 0).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Net Payable Amount</p>
-                  <p className="text-2xl font-bold text-green-500">
-                    ₹{calculateTotalPayable(acceptedLoans).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Average Interest Rate</p>
-                  <p className="text-2xl font-bold">
-                    {(acceptedLoans.reduce((sum, loan) => sum + loan.interestRate, 0) / acceptedLoans.length).toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-            </CardContent>
           </Card>
-        )}
-
-        <Card className="bg-[#605EA1] max-w-7xl">
-          <CardHeader>
-            <CardTitle>Request a Loan</CardTitle>
-            <CardDescription>
-              Specify your loan amount and purpose to receive offers from lenders
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6 ">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Loan Amount: ₹{amount}</label>
-                <Slider
-                  value={[amount]}
-                  onValueChange={(value) => setAmount(value[0])}
-                  max={10000}
-                  min={1000}
-                  step={100}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>₹1,000</span>
-                  <span>₹10,000</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Loan Purpose</label>
-                <Input
-                  placeholder="Briefly describe why you need this loan"
-                  value={purpose}
-                  onChange={(e) => setPurpose(e.target.value)}
-                  className="bg-[#353369]"
-                />
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit Loan Request"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-
-        <br />
-        <Card className="max-w-7xl bg-[#605EA1]"> 
-          <CardHeader>
-            <CardTitle>Loan Offers Received</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {myProposals.map((proposal) => (
-                <Card key={proposal.requestId} className="p-4 bg-[#353369] border-gray-500">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        {proposal.status === "proposed" ? (
-                          <AlertCircle className="h-5 w-5 text-yellow-500" />
-                        ) : (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                        )}
-                        <p className="font-medium text-lg">₹{proposal.amount.toLocaleString()}</p>
-                      </div>
-                      <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">From: {proposal.lenderName}</p>
-                        <p className="text-sm text-muted-foreground">Interest Rate: {proposal.interestRate}%</p>
-                        <p className="text-sm text-muted-foreground">Duration: {proposal.duration} months</p>
-                        <p className="text-sm text-muted-foreground">EMI: ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}/month</p>
-                        <p className="text-xs text-muted-foreground">
-                          Received: {new Date(proposal.created_at).toLocaleDateString()}
-                        </p>
-                        {proposal.status === 'accepted' && (
-                          <>
-                            <p className="text-sm text-muted-foreground">
-                              Remaining Payments: {proposal.remaining_payments || proposal.duration}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Next Payment: {new Date(proposal.next_payment_date || calculateNextPaymentDate()).toLocaleDateString()}
-                            </p>
-                          </>
-                        )}
-                      </div>
+        ) : (
+          <>
+            {/* Existing accepted loans section */}
+            {acceptedLoans.length > 0 && (
+              <Card className="bg-[#605EA1] max-w-7xl mb-6">
+                <CardHeader>
+                  <CardTitle>Loan Summary</CardTitle>
+                  <CardDescription>Overview of your accepted loans</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Active Loans</p>
+                      <p className="text-2xl font-bold">{acceptedLoans.length}</p>
                     </div>
-                    <div className="flex flex-col gap-2">
-                      {proposal.status === "proposed" ? (
-                        <Button 
-                          variant="default"
-                          onClick={() => handleAcceptProposal(proposal)}
-                        >
-                          Accept Offer
-                        </Button>
-                      ) : proposal.status === "accepted" && proposal.remaining_payments > 0 ? (
-                        <Button 
-                          variant="default"
-                          onClick={() => handlePayment(proposal)}
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          Pay EMI ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}
-                        </Button>
-                      ) : (
-                        <span className="px-2 py-1 text-sm bg-green-500/20 text-green-500 rounded-full">
-                          Completed
-                        </span>
-                      )}
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Principal</p>
+                      <p className="text-2xl font-bold">
+                        ₹{acceptedLoans.reduce((sum, loan) => sum + loan.amount, 0).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Net Payable Amount</p>
+                      <p className="text-2xl font-bold text-green-500">
+                        ₹{calculateTotalPayable(acceptedLoans).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Average Interest Rate</p>
+                      <p className="text-2xl font-bold">
+                        {(acceptedLoans.reduce((sum, loan) => sum + loan.interestRate, 0) / acceptedLoans.length).toFixed(1)}%
+                      </p>
                     </div>
                   </div>
-                </Card>
-              ))}
-              {myProposals.length === 0 && (
-                <p className="text-center text-muted-foreground py-4">
-                  No loan offers received yet
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Loan request form */}
+            <Card className="bg-[#605EA1] max-w-7xl">
+              <CardHeader>
+                <CardTitle>Request a Loan</CardTitle>
+                <CardDescription>
+                  Specify your loan amount and purpose to receive offers from lenders
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6 ">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Loan Amount: ₹{amount}</label>
+                    <Slider
+                      value={[amount]}
+                      onValueChange={(value) => setAmount(value[0])}
+                      max={10000}
+                      min={1000}
+                      step={100}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>₹1,000</span>
+                      <span>₹10,000</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Loan Purpose</label>
+                    <Input
+                      placeholder="Briefly describe why you need this loan"
+                      value={purpose}
+                      onChange={(e) => setPurpose(e.target.value)}
+                      className="bg-[#353369]"
+                    />
+                  </div>
+
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {isLoading ? "Submitting..." : "Submit Loan Request"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Existing loan offers section */}
+            <br />
+            <Card className="max-w-7xl bg-[#605EA1]"> 
+              <CardHeader>
+                <CardTitle>Loan Offers Received</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {myProposals.map((proposal) => (
+                    <Card key={proposal.requestId} className="p-4 bg-[#353369] border-gray-500">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            {proposal.status === "proposed" ? (
+                              <AlertCircle className="h-5 w-5 text-yellow-500" />
+                            ) : (
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                            )}
+                            <p className="font-medium text-lg">₹{proposal.amount.toLocaleString()}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm text-muted-foreground">From: {proposal.lenderName}</p>
+                            <p className="text-sm text-muted-foreground">Interest Rate: {proposal.interestRate}%</p>
+                            <p className="text-sm text-muted-foreground">Duration: {proposal.duration} months</p>
+                            <p className="text-sm text-muted-foreground">EMI: ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}/month</p>
+                            <p className="text-xs text-muted-foreground">
+                              Received: {new Date(proposal.created_at).toLocaleDateString()}
+                            </p>
+                            {proposal.status === 'accepted' && (
+                              <>
+                                <p className="text-sm text-muted-foreground">
+                                  Remaining Payments: {proposal.remaining_payments || proposal.duration}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  Next Payment: {new Date(proposal.next_payment_date || calculateNextPaymentDate()).toLocaleDateString()}
+                                </p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          {proposal.status === "proposed" ? (
+                            <Button 
+                              variant="default"
+                              onClick={() => handleAcceptProposal(proposal)}
+                            >
+                              Accept Offer
+                            </Button>
+                          ) : proposal.status === "accepted" && proposal.remaining_payments > 0 ? (
+                            <Button 
+                              variant="default"
+                              onClick={() => handlePayment(proposal)}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              Pay EMI ₹{calculateEMI(proposal.amount, proposal.interestRate, proposal.duration)}
+                            </Button>
+                          ) : (
+                            <span className="px-2 py-1 text-sm bg-green-500/20 text-green-500 rounded-full">
+                              Completed
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                  {myProposals.length === 0 && (
+                    <p className="text-center text-muted-foreground py-4">
+                      No loan offers received yet
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </main>
     </div>
   )

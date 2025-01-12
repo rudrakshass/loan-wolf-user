@@ -127,6 +127,7 @@ export default function Signup() {
         aadharCard: "https://postimg.cc/KkWNjxsq",
         panCard: "https://i.postimg.cc/dVj6fF1Q/Whats-App-Image-2025-01-08-at-23-48-22-bd1b4164.jpg",
         studentId: "https://i.postimg.cc/dVj6fF1Q/Whats-App-Image-2025-01-08-at-23-48-22-bd1b4164.jpg",
+        status: "unverified",  // Add this line
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -139,14 +140,11 @@ export default function Signup() {
         loansRepaid: 0
       } : userData;
 
-      // Create user document in users collection
-      await setDoc(doc(db, 'users', user.uid), finalUserData);
-
       // Create role-specific document
       if (userType === 'lender') {
         await setDoc(doc(db, 'lender', user.uid), finalUserData);
         router.push('/lender');
-      } else {
+      } else if(userType=='borrower')  {
         await setDoc(doc(db, 'borrower', user.uid), finalUserData);
         router.push('/borrower');
       }
